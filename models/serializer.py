@@ -1,12 +1,12 @@
 from rest_framework import serializers
-from .models import Model
+from .models import Model, Review
 from rest_framework.exceptions import ValidationError
 
 
 class ModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Model
-        fields = 'photo name age description height weight is_virgin price'.split()
+        fields = 'photo name age description height weight is_virgin price rating'.split()
 
 
 class ModelValidateSerializer(serializers.Serializer):
@@ -24,3 +24,13 @@ class ModelValidateSerializer(serializers.Serializer):
             raise ValidationError('Только совершеннолетние!!!')
         if age > 49:
             raise ValidationError('Слишком старый!!!')
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = 'stars text model_name'.split()
+
+
+class ReviewValidateSerializer(serializers.Serializer):
+    text = serializers.CharField()
