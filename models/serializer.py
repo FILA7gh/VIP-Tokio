@@ -1,12 +1,20 @@
 from rest_framework import serializers
-from .models import Model, Review
+from .models import Model, Review, Gallery
 from rest_framework.exceptions import ValidationError
 
 
+class GallerySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Gallery
+        fields = '__all__'
+
+
 class ModelSerializer(serializers.ModelSerializer):
+    gallery = GallerySerializer(many=True)
+
     class Meta:
         model = Model
-        fields = 'photo name age description height weight is_virgin price rating'.split()
+        fields = 'id photo name age description height weight is_virgin price rating gallery'.split()
 
 
 class ModelValidateSerializer(serializers.Serializer):

@@ -1,6 +1,11 @@
 from django.db import models
 
 
+class Gallery(models.Model):
+    image = models.ImageField()
+    about = models.CharField(max_length=50)
+
+
 class Model(models.Model):
     photo = models.ImageField(blank=True, null=True)
     name = models.CharField(max_length=100)
@@ -10,6 +15,7 @@ class Model(models.Model):
     weight = models.FloatField(default=70)
     is_virgin = models.BooleanField(default=False)
     price = models.FloatField(default=1000)
+    gallery = models.ManyToManyField(Gallery, blank=True)
 
     def __str__(self):
         return self.name
@@ -23,7 +29,7 @@ class Model(models.Model):
 class Review(models.Model):
     CHOICE = ((i, '*' * i) for i in range(1, 6))
     stars = models.IntegerField(choices=CHOICE)
-    text = models.CharField()
+    text = models.CharField(max_length=255)
     model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name='reviews')
 
     def __str__(self):
