@@ -3,9 +3,9 @@ from . import views
 
 
 urlpatterns = [
-    path('', views.ModelApiView.as_view()),
-    path('<int:id_>/', views.ModelDetailApiView.as_view()),
+    path('', views.ModelAPIView.as_view()),
+    path('<int:pk>/', views.ModelDetailAPIView.as_view()),
 
-    path('reviews/', views.ReviewApiView.as_view()),
-    path('reviews/<int:id_>/', views.ReviewDetailApiView.as_view()),
+    # path('reviews/', views.ReviewApiView.as_view()),
+    # path('reviews/<int:id_>/', views.ReviewDetailApiView.as_view()),
 ]

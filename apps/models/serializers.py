@@ -1,20 +1,16 @@
 from rest_framework import serializers
-from .models import Model, Review, Gallery
+from .models import Model
 from rest_framework.exceptions import ValidationError
 
 
-class GallerySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Gallery
-        fields = '__all__'
-
-
 class ModelSerializer(serializers.ModelSerializer):
-    gallery = GallerySerializer(many=True)
+    # gallery = GallerySerializer(many=True)
+    # appearance = serializers.ChoiceField(choices=Model.CHOICE_APPEARANCE)
 
     class Meta:
         model = Model
-        fields = 'id photo name age description height weight is_virgin price rating gallery'.split()
+        fields = 'photo description nickname age appearance height weight eyes hairs ' \
+                 'type area breast phone_number schedule speak_english is_trans in_osh'.split()
 
 
 class ModelValidateSerializer(serializers.Serializer):
@@ -34,11 +30,11 @@ class ModelValidateSerializer(serializers.Serializer):
             raise ValidationError('Слишком старый!!!')
 
 
-class ReviewSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Review
-        fields = 'stars text model_name'.split()
-
-
-class ReviewValidateSerializer(serializers.Serializer):
-    text = serializers.CharField()
+# class ReviewSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Review
+#         fields = 'stars text model_name'.split()
+#
+#
+# class ReviewValidateSerializer(serializers.Serializer):
+#     text = serializers.CharField()

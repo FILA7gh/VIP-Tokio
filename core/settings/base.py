@@ -14,7 +14,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -41,9 +41,9 @@ OTHER_APPS = [
 ]
 
 INSTALLED_APPS = [
+    *OTHER_APPS,
     *DJANGO_APPS,
     *PROJECT_APPS,
-    *OTHER_APPS
 ]
 
 
@@ -103,7 +103,7 @@ DATABASES = {
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework.authentication.TokenAuthentication'],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 3
+    'PAGE_SIZE': 9
 }
 
 # Password validation
