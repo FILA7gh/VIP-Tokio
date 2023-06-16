@@ -31,6 +31,7 @@ DJANGO_APPS = [
 PROJECT_APPS = [
     'apps.models',
     'apps.users',
+    'apps.services',
 ]
 
 OTHER_APPS = [
@@ -145,7 +146,6 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-
 
 
 # Default primary key field type
