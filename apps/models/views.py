@@ -1,5 +1,5 @@
 from .models import Model, Review
-from .serializer import ModelSerializer, ModelValidateSerializer, ReviewSerializer, ReviewValidateSerializer
+from .serializers import ModelSerializer, ModelValidateSerializer, ReviewSerializer, ReviewValidateSerializer
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response

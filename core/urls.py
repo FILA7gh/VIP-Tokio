@@ -1,9 +1,8 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
-from vip_toktogul.settings import MEDIA_URL, MEDIA_ROOT
-from . import swagger
-
+from core.settings.base import MEDIA_URL, MEDIA_ROOT
+from .settings import swagger
 
 urlpatterns = [
     path('admin/', admin.site.urls),

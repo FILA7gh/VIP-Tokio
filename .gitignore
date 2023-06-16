@@ -2,3 +2,6 @@
 pycharm/
 *.py[cod]
 *.so
+.env
+.gitignore
+db.sqlite3
