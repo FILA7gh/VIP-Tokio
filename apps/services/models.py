@@ -2,10 +2,10 @@ from django.db import models
 
 
 class BasicService(models.Model):
-    name = models.CharField('Название', max_length=255)
+    title = models.CharField('Название', max_length=255)
 
     def __str__(self):
-        return self.name
+        return self.title
 
     class Meta:
         verbose_name = 'Основная услуга'
@@ -13,10 +13,10 @@ class BasicService(models.Model):
 
 
 class AdditionalService(models.Model):
-    name = models.CharField('Название', max_length=255)
+    title = models.CharField('Название', max_length=255)
 
     def __str__(self):
-        return self.name
+        return self.title
 
     class Meta:
         verbose_name = 'Дополнительная услуга'
@@ -24,10 +24,10 @@ class AdditionalService(models.Model):
 
 
 class Massage(models.Model):
-    name = models.CharField('Название', max_length=255)
+    title = models.CharField('Название', max_length=255)
 
     def __str__(self):
-        return self.name
+        return self.title
 
     class Meta:
         verbose_name = 'Массаж'
@@ -35,10 +35,10 @@ class Massage(models.Model):
 
 
 class Extreme(models.Model):
-    name = models.CharField('Название', max_length=255)
+    title = models.CharField('Название', max_length=255)
 
     def __str__(self):
-        return self.name
+        return self.title
 
     class Meta:
         verbose_name = 'Экстрим'
@@ -46,10 +46,10 @@ class Extreme(models.Model):
 
 
 class SadoMazo(models.Model):
-    name = models.CharField('Название', max_length=255)
+    title = models.CharField('Название', max_length=255)
 
     def __str__(self):
-        return self.name
+        return self.title
 
     class Meta:
         verbose_name = 'Садо Мазо'
@@ -57,10 +57,10 @@ class SadoMazo(models.Model):
 
 
 class Striptease(models.Model):
-    name = models.CharField('Название', max_length=255)
+    title = models.CharField('Название', max_length=255)
 
     def __str__(self):
-        return self.name
+        return self.title
 
     class Meta:
         verbose_name = 'Стриптиз'

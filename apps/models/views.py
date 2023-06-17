@@ -3,7 +3,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 from .models import Model
-from .serializers import ModelSerializer, ModelValidateSerializer
+from .serializers import ModelSerializer
 
 
 class ModelAPIView(ListCreateAPIView):

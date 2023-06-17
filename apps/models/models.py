@@ -13,6 +13,7 @@ class Model(models.Model):
                      ('2', '2'), ('2.5', '2.5'), ('3', '3'),
                      ('3.5', '3.5'), ('4', '4'), ('4+', '4+'))
 
+    # models
     photo = models.ImageField(upload_to='model_photo')
     description = models.TextField()
     nickname = models.CharField(max_length=100)
@@ -33,7 +34,12 @@ class Model(models.Model):
     # gallery = models.ForeignKey(Gallery, )
 
     # services
-    # basic_service =
+    basic_service = models.ManyToManyField(BasicService)
+    additional_service = models.ManyToManyField(AdditionalService)
+    massage = models.ManyToManyField(Massage)
+    extreme = models.ManyToManyField(Extreme)
+    sadomazo = models.ManyToManyField(SadoMazo)
+    striptease = models.ManyToManyField(Striptease)
 
     def __str__(self):
         return self.nickname
