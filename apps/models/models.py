@@ -33,7 +33,7 @@ class Model(models.Model):
     # gallery = models.ForeignKey(Gallery, )
 
     # services
-    basic_service =
+    # basic_service =
 
     def __str__(self):
         return self.nickname
