@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class BasicService(models.Model):
+class BasicService(models.Model):  # Основные услуги
     name = models.CharField('Название', max_length=255)
 
     def __str__(self):
@@ -12,7 +12,7 @@ class BasicService(models.Model):
         verbose_name_plural = 'Основные услуги'
 
 
-class AdditionalService(models.Model):
+class AdditionalService(models.Model):  # Доп услуги
     name = models.CharField('Название', max_length=255)
 
     def __str__(self):
@@ -23,7 +23,7 @@ class AdditionalService(models.Model):
         verbose_name_plural = 'Дополнительные услуги'
 
 
-class Massage(models.Model):
+class Massage(models.Model):  # Сообщение
     name = models.CharField('Название', max_length=255)
 
     def __str__(self):
@@ -34,7 +34,7 @@ class Massage(models.Model):
         verbose_name_plural = 'Массажи'
 
 
-class Extreme(models.Model):
+class Extreme(models.Model):  # Экстрим
     name = models.CharField('Название', max_length=255)
 
     def __str__(self):
@@ -45,7 +45,7 @@ class Extreme(models.Model):
         verbose_name_plural = 'Экстримы'
 
 
-class SadoMazo(models.Model):
+class SadoMazo(models.Model):  # Садо Мазо
     name = models.CharField('Название', max_length=255)
 
     def __str__(self):
@@ -56,7 +56,7 @@ class SadoMazo(models.Model):
         verbose_name_plural = 'Садо Мазо'
 
 
-class Striptease(models.Model):
+class Striptease(models.Model):  # Стриптиз
     name = models.CharField('Название', max_length=255)
 
     def __str__(self):
