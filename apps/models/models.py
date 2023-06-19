@@ -1,5 +1,5 @@
-from django.db import models
 from apps.services.models import *
+from django.db import models
 
 
 class Model(models.Model):
@@ -24,7 +24,7 @@ class Model(models.Model):
     eyes = models.CharField(choices=CHOICE_EYES, max_length=20)
     hairs = models.CharField(choices=CHOICE_HAIRS, max_length=20)
     type = models.CharField(choices=CHOICE_TYPE, max_length=20)
-    area = models.CharField(max_length=100)
+    area = models.CharField(max_length=100, null=True, blank=True)
     breast = models.CharField(choices=CHOICE_BREAST, max_length=20)  # грудь
     phone_number = models.CharField(max_length=16)
     schedule = models.CharField(max_length=19)  # график работы
@@ -35,11 +35,11 @@ class Model(models.Model):
 
     # services
     basic_service = models.ManyToManyField(BasicService)
-    additional_service = models.ManyToManyField(AdditionalService)
-    massage = models.ManyToManyField(Massage)
-    extreme = models.ManyToManyField(Extreme)
-    sadomazo = models.ManyToManyField(SadoMazo)
-    striptease = models.ManyToManyField(Striptease)
+    additional_service = models.ManyToManyField(AdditionalService, null=True, blank=True)  # доп услуги
+    massage = models.ManyToManyField(Massage, null=True, blank=True)
+    extreme = models.ManyToManyField(Extreme, null=True, blank=True)
+    sadomazo = models.ManyToManyField(SadoMazo, null=True, blank=True)
+    striptease = models.ManyToManyField(Striptease, null=True, blank=True)
 
     def __str__(self):
         return self.nickname

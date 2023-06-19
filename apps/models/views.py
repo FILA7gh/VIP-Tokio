@@ -3,7 +3,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 from .models import Model
-from .serializers import ModelSerializer
+from .serializers import ModelSerializer, ModelDetailSerializer
 
 
 class ModelAPIView(ListCreateAPIView):
@@ -14,7 +14,7 @@ class ModelAPIView(ListCreateAPIView):
 
 class ModelDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Model.objects.all()
-    serializer_class = ModelSerializer
+    serializer_class = ModelDetailSerializer
 
 
 

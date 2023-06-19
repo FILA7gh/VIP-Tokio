@@ -65,5 +65,3 @@ class Striptease(models.Model):
     class Meta:
         verbose_name = 'Стриптиз'
         verbose_name_plural = 'Стриптизы'
-
-

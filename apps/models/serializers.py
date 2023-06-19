@@ -42,6 +42,12 @@ class StripteaseSerializer(serializers.ModelSerializer):
 
 
 class ModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Model
+        fields = 'photo nickname height weight breast phone_number'.split()
+
+
+class ModelDetailSerializer(serializers.ModelSerializer):
     # gallery = GallerySerializer(many=True)
     basic_service = BasicServiceSerializer(many=True)
     additional_service = AdditionalServiceSerializer(many=True)
@@ -55,6 +61,9 @@ class ModelSerializer(serializers.ModelSerializer):
         fields = 'photo nickname phone_number age height weight appearance eyes hairs ' \
                  'breast description speak_english type area schedule basic_service ' \
                  'additional_service massage striptease sadomazo extreme is_trans in_osh'.split()
+
+
+
 
 
 # class ReviewSerializer(serializers.ModelSerializer):
