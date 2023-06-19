@@ -35,11 +35,11 @@ class Model(models.Model):
 
     # services
     basic_service = models.ManyToManyField(BasicService)
-    additional_service = models.ManyToManyField(AdditionalService, null=True, blank=True)  # доп услуги
-    massage = models.ManyToManyField(Massage, null=True, blank=True)
-    extreme = models.ManyToManyField(Extreme, null=True, blank=True)
-    sadomazo = models.ManyToManyField(SadoMazo, null=True, blank=True)
-    striptease = models.ManyToManyField(Striptease, null=True, blank=True)
+    additional_service = models.ManyToManyField(AdditionalService, blank=True)  # доп услуги
+    massage = models.ManyToManyField(Massage, blank=True)
+    extreme = models.ManyToManyField(Extreme, blank=True)
+    sadomazo = models.ManyToManyField(SadoMazo, blank=True)
+    striptease = models.ManyToManyField(Striptease, blank=True)
 
     def __str__(self):
         return self.nickname

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-# from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError
 
 from .models import Model
 from apps.services.models import *
@@ -63,7 +63,32 @@ class ModelDetailSerializer(serializers.ModelSerializer):
                  'additional_service massage striptease sadomazo extreme is_trans in_osh'.split()
 
 
+class ModelValidateSerializer(serializers.Serializer):
 
+    @staticmethod
+    def validate_phone_number(phone_number):
+        if 10 < len(phone_number) < 16 and not phone_number.isdigit():
+            pass
+
+    @staticmethod
+    def validate_age(age):
+        if 17 < age < 45:
+            raise ValidationError('Только девшуки или женщины 18-45 лет!')
+
+    @staticmethod
+    def validate_height(height):
+        if 150 < height < 190:
+            raise ValidationError('Рост строго 150-190!')
+
+    @staticmethod
+    def validate_weight(weight):
+        if 45 < weight < 70:
+            raise ValidationError('Вес строго 45-70')
+
+    @staticmethod
+    def validate_description(description):
+        if len(description) < 20:
+            raise ValidationError('Слишком мало информации о себе!')
 
 
 # class ReviewSerializer(serializers.ModelSerializer):
