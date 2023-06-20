@@ -31,6 +31,10 @@ class ModelDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = ModelDetailSerializer
     permission_classes = [IsAdminOrReadOnly]
 
+    # def get(self, request, *args, **kwargs):
+    #     model = self.get_object()
+    #     return Response(data=ModelDetailSerializer(model, context={'request': request}).data)
+
     def put(self, request, *args, **kwargs):
         serializer = ModelValidateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

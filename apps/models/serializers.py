@@ -1,8 +1,18 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from .models import Model
+from .models import Model, ModelsGallery
 from apps.services.models import *
+
+
+# Gallery
+class GallerySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ModelsGallery
+        fields = ['photo']
+
+
+'''Services'''
 
 
 class BasicServiceSerializer(serializers.ModelSerializer):
@@ -41,14 +51,17 @@ class StripteaseSerializer(serializers.ModelSerializer):
         fields = ['title']
 
 
+'''Model'''
+
+
 class ModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Model
-        fields = 'photo nickname height weight breast phone_number'.split()
+        fields = 'nickname height weight breast phone_number'.split()
 
 
 class ModelDetailSerializer(serializers.ModelSerializer):
-    # gallery = GallerySerializer(many=True)
+    # gallery = GallerySerializer()
     basic_service = BasicServiceSerializer(many=True)
     additional_service = AdditionalServiceSerializer(many=True)
     massage = MassageSerializer(many=True)
@@ -58,7 +71,7 @@ class ModelDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Model
-        fields = 'photo nickname phone_number age height weight appearance eyes hairs ' \
+        fields = 'gallery_list nickname phone_number age height weight appearance eyes hairs ' \
                  'breast description speak_english type area schedule basic_service ' \
                  'additional_service massage striptease sadomazo extreme is_trans in_osh'.split()
 

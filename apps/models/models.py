@@ -14,9 +14,8 @@ class Model(models.Model):
                      ('3.5', '3.5'), ('4', '4'), ('4+', '4+'))
 
     # models
-    photo = models.ImageField(upload_to='model_photo')
-    description = models.TextField()
     nickname = models.CharField(max_length=100)
+    description = models.TextField()
     age = models.PositiveIntegerField()
     appearance = models.CharField(choices=CHOICE_APPEARANCE, max_length=20)  # внешность
     height = models.PositiveIntegerField()
@@ -31,7 +30,6 @@ class Model(models.Model):
     speak_english = models.BooleanField(default=False)
     is_trans = models.BooleanField(default=False)
     in_osh = models.BooleanField(default=False)
-    # gallery = models.ForeignKey(Gallery, )
 
     # services
     basic_service = models.ManyToManyField(BasicService)
@@ -44,11 +42,26 @@ class Model(models.Model):
     def __str__(self):
         return self.nickname
 
+    def gallery_list(self):
+        return [gallery.photo.url for gallery in self.gallery.all()]
+
     class Meta:
         verbose_name = 'Model'
         verbose_name_plural = 'Models'
 
-#
+
+class ModelsGallery(models.Model):
+    photo = models.ImageField(upload_to='model_photos')
+    model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name='gallery')
+
+    def __str__(self):
+        return f'{self.model}'
+
+    class Meta:
+        verbose_name = 'Gallery'
+        verbose_name_plural = 'Galleries'
+
+
 #     @property
 #     def rating(self):
 #         all_stars = [review.stars for review in self.reviews.all()]
