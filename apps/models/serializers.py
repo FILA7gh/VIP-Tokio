@@ -1,33 +1,107 @@
 from rest_framework import serializers
-from .models import Model
 from rest_framework.exceptions import ValidationError
+
+from .models import Model, ModelsGallery
+from apps.services.models import *
+
+
+# Gallery
+class GallerySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ModelsGallery
+        fields = ['photo']
+
+
+'''Services'''
+
+
+class BasicServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BasicService
+        fields = ['title']
+
+
+class AdditionalServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AdditionalService
+        fields = ['title']
+
+
+class MassageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Massage
+        fields = ['title']
+
+
+class ExtremeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Extreme
+        fields = ['title']
+
+
+class SadoMazoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SadoMazo
+        fields = ['title']
+
+
+class StripteaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Striptease
+        fields = ['title']
+
+
+'''Model'''
 
 
 class ModelSerializer(serializers.ModelSerializer):
-    # gallery = GallerySerializer(many=True)
-    # appearance = serializers.ChoiceField(choices=Model.CHOICE_APPEARANCE)
+    class Meta:
+        model = Model
+        fields = 'nickname height weight breast phone_number'.split()
+
+
+class ModelDetailSerializer(serializers.ModelSerializer):
+    # gallery = GallerySerializer()
+    basic_service = BasicServiceSerializer(many=True)
+    additional_service = AdditionalServiceSerializer(many=True)
+    massage = MassageSerializer(many=True)
+    extreme = ExtremeSerializer(many=True)
+    sadomazo = SadoMazoSerializer(many=True)
+    striptease = StripteaseSerializer(many=True)
 
     class Meta:
         model = Model
-        fields = 'photo description nickname age appearance height weight eyes hairs ' \
-                 'type area breast phone_number schedule speak_english is_trans in_osh'.split()
+        fields = 'gallery_list nickname phone_number age height weight appearance eyes hairs ' \
+                 'breast description speak_english type area schedule basic_service ' \
+                 'additional_service massage striptease sadomazo extreme is_trans in_osh'.split()
 
 
 class ModelValidateSerializer(serializers.Serializer):
-    photo = serializers.ImageField()
-    name = serializers.CharField(max_length=100)
-    age = serializers.IntegerField(max_value=50)
-    description = serializers.CharField()
-    height = serializers.FloatField()
-    weight = serializers.FloatField()
-    is_virgin = serializers.BooleanField()
-    price = serializers.FloatField()
 
-    def validate_age(self, age):
-        if age < 18:
-            raise ValidationError('Только совершеннолетние!!!')
-        if age > 49:
-            raise ValidationError('Слишком старый!!!')
+    @staticmethod
+    def validate_phone_number(phone_number):
+        if 10 < len(phone_number) < 16 and not phone_number.isdigit():
+            pass
+
+    @staticmethod
+    def validate_age(age):
+        if 17 < age < 45:
+            raise ValidationError('Только девшуки или женщины 18-45 лет!')
+
+    @staticmethod
+    def validate_height(height):
+        if 150 < height < 190:
+            raise ValidationError('Рост строго 150-190!')
+
+    @staticmethod
+    def validate_weight(weight):
+        if 45 < weight < 70:
+            raise ValidationError('Вес строго 45-70')
+
+    @staticmethod
+    def validate_description(description):
+        if len(description) < 20:
+            raise ValidationError('Слишком мало информации о себе!')
 
 
 # class ReviewSerializer(serializers.ModelSerializer):

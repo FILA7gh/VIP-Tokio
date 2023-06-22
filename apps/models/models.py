@@ -1,3 +1,4 @@
+from apps.services.models import *
 from django.db import models
 
 
@@ -12,9 +13,9 @@ class Model(models.Model):
                      ('2', '2'), ('2.5', '2.5'), ('3', '3'),
                      ('3.5', '3.5'), ('4', '4'), ('4+', '4+'))
 
-    photo = models.ImageField(upload_to='model_photo')
-    description = models.TextField()
+    # models
     nickname = models.CharField(max_length=100)
+    description = models.TextField()
     age = models.PositiveIntegerField()
     appearance = models.CharField(choices=CHOICE_APPEARANCE, max_length=20)  # внешность
     height = models.PositiveIntegerField()
@@ -22,25 +23,45 @@ class Model(models.Model):
     eyes = models.CharField(choices=CHOICE_EYES, max_length=20)
     hairs = models.CharField(choices=CHOICE_HAIRS, max_length=20)
     type = models.CharField(choices=CHOICE_TYPE, max_length=20)
-    area = models.CharField(max_length=100)
+    area = models.CharField(max_length=100, null=True, blank=True)
     breast = models.CharField(choices=CHOICE_BREAST, max_length=20)  # грудь
     phone_number = models.CharField(max_length=16)
     schedule = models.CharField(max_length=19)  # график работы
     speak_english = models.BooleanField(default=False)
     is_trans = models.BooleanField(default=False)
     in_osh = models.BooleanField(default=False)
-    # gallery = models.ForeignKey(Gallery, )
 
     # services
+    basic_service = models.ManyToManyField(BasicService)
+    additional_service = models.ManyToManyField(AdditionalService, blank=True)  # доп услуги
+    massage = models.ManyToManyField(Massage, blank=True)
+    extreme = models.ManyToManyField(Extreme, blank=True)
+    sadomazo = models.ManyToManyField(SadoMazo, blank=True)
+    striptease = models.ManyToManyField(Striptease, blank=True)
 
     def __str__(self):
         return self.nickname
+
+    def gallery_list(self):
+        return [gallery.photo.url for gallery in self.gallery.all()]
 
     class Meta:
         verbose_name = 'Model'
         verbose_name_plural = 'Models'
 
-#
+
+class ModelsGallery(models.Model):
+    photo = models.ImageField(upload_to='model_photos')
+    model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name='gallery')
+
+    def __str__(self):
+        return f'{self.model}'
+
+    class Meta:
+        verbose_name = 'Gallery'
+        verbose_name_plural = 'Galleries'
+
+
 #     @property
 #     def rating(self):
 #         all_stars = [review.stars for review in self.reviews.all()]
