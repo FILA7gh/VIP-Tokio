@@ -9,6 +9,8 @@ urlpatterns = [
 
     path('api/v1/models/', include('apps.models.urls')),
 
+    path('api/v1/others/', include('apps.others.urls')),
+
     path('api/v1/users/', include('apps.users.urls'))
 
 ]

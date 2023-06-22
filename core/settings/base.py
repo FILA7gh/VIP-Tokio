@@ -33,6 +33,7 @@ PROJECT_APPS = [
     'apps.models',
     'apps.users',
     'apps.services',
+    'apps.others',
 ]
 
 OTHER_APPS = [
