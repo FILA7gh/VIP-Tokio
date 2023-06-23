@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import *
+from .models import Support, MiniBlog
 
 
 class SupportSerializer(serializers.ModelSerializer):
@@ -13,9 +13,9 @@ class SupportSerializer(serializers.ModelSerializer):
 
 
 class MiniBlogSerializer(serializers.ModelSerializer):
-    title = models.CharField(max_length=30)
-    image = models.ImageField()
-    description = models.TextField()
+    title = serializers.CharField(max_length=30)
+    image = serializers.ImageField()
+    description = serializers.CharField()
 
     class Meta:
         model = MiniBlog
@@ -36,9 +36,3 @@ class AboutUsSerializer(serializers.ModelSerializer):
         model = MiniBlog
         fields = '__all__'
 
-
-class AboutUsDetailSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = MiniBlog
-        fields = '__all__'

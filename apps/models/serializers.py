@@ -86,7 +86,7 @@ class ModelValidateSerializer(serializers.Serializer):
     @staticmethod
     def validate_age(age):
         if 17 < age < 45:
-            raise ValidationError('Только девшуки или женщины 18-45 лет!')
+            raise ValidationError('Только девушки или женщины 18-45 лет!')
 
     @staticmethod
     def validate_height(height):

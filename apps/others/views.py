@@ -1,9 +1,8 @@
-from django.shortcuts import render
-from rest_framework.views import APIView
 from .serializers import *
 from rest_framework.generics import CreateAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from .permissions import *
-from rest_framework import permissions
+from apps.models.permissions import IsAdminOrReadOnly
+from .models import Support, MiniBlog, AboutUs
 
 
 class SupportAPIView(CreateAPIView):
@@ -26,13 +25,5 @@ class AboutUsAPIView(ListCreateAPIView):
     queryset = AboutUs.objects.all()
     serializer_class = AboutUsSerializer
     permission_classes = [IsAdminOrReadOnly, ]
-
-
-class AboutUsDetailAPIView(ListCreateAPIView):
-    queryset = AboutUs.objects.all()
-    serializer_class = AboutUsSerializer
-    permission_classes = [IsAdminOrReadOnly, ]
-
-
 
 
