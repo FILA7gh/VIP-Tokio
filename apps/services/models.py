@@ -77,7 +77,7 @@ class PackagePrice(models.Model):
     # model = models.OneToOneField(Model, on_delete=models.CASCADE, related_name='price')
 
     def __str__(self):
-        return f'{self.model}'
+        return f'{self.id}'
 
     class Meta:
         verbose_name = 'Пакет цен'

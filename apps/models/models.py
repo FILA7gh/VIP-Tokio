@@ -43,9 +43,6 @@ class Model(models.Model):
     def __str__(self):
         return self.nickname
 
-    def gallery_list(self):
-        return [gallery.photo.url for gallery in self.gallery.all()]
-
     class Meta:
         verbose_name = 'Модель'
         verbose_name_plural = 'Модели'

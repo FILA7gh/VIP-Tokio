@@ -7,12 +7,14 @@ from apps.services.models import *
 
 # Gallery
 class GallerySerializer(serializers.ModelSerializer):
+
     class Meta:
         model = ModelsGallery
-        fields = ['photo']
+        fields = 'model_id photo'.split()
 
 
 '''Services'''
+
 
 class PackagePriceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -66,7 +68,7 @@ class ModelSerializer(serializers.ModelSerializer):
 
 
 class ModelDetailSerializer(serializers.ModelSerializer):
-    # gallery = GallerySerializer()
+    gallery = GallerySerializer(many=True)
     package_price = PackagePriceSerializer()
     basic_service = BasicServiceSerializer(many=True)
     additional_service = AdditionalServiceSerializer(many=True)
@@ -77,7 +79,7 @@ class ModelDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Model
-        fields = 'gallery_list nickname phone_number age height weight appearance eyes hairs ' \
+        fields = 'gallery nickname phone_number age height weight appearance eyes hairs ' \
                  'breast description speak_english type package_price area schedule basic_service ' \
                  'additional_service massage striptease sadomazo extreme is_trans in_osh'.split()
 
