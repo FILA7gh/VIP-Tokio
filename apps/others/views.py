@@ -1,8 +1,8 @@
 from .serializers import *
 from rest_framework.generics import CreateAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from .permissions import *
 from apps.models.permissions import IsAdminOrReadOnly
-from .models import Support, MiniBlog, AboutUs
+from .permissions import IsOwnerOrReadOnly
+from .models import AboutUs
 
 
 class SupportAPIView(CreateAPIView):
@@ -25,5 +25,4 @@ class AboutUsAPIView(ListCreateAPIView):
     queryset = AboutUs.objects.all()
     serializer_class = AboutUsSerializer
     permission_classes = [IsAdminOrReadOnly, ]
-
 

@@ -32,6 +32,7 @@ class Model(models.Model):
     in_osh = models.BooleanField(default=False)
 
     # services
+    package_price = models.OneToOneField(PackagePrice, on_delete=models.CASCADE, related_name='model')
     basic_service = models.ManyToManyField(BasicService)
     additional_service = models.ManyToManyField(AdditionalService, blank=True)  # доп услуги
     massage = models.ManyToManyField(Massage, blank=True)
@@ -46,8 +47,8 @@ class Model(models.Model):
         return [gallery.photo.url for gallery in self.gallery.all()]
 
     class Meta:
-        verbose_name = 'Model'
-        verbose_name_plural = 'Models'
+        verbose_name = 'Модель'
+        verbose_name_plural = 'Модели'
 
 
 class ModelsGallery(models.Model):
@@ -58,8 +59,8 @@ class ModelsGallery(models.Model):
         return f'{self.model}'
 
     class Meta:
-        verbose_name = 'Gallery'
-        verbose_name_plural = 'Galleries'
+        verbose_name = 'Галерея'
+        verbose_name_plural = 'Галереи'
 
 
 #     @property

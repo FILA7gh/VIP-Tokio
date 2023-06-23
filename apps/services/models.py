@@ -65,3 +65,20 @@ class Striptease(models.Model):
     class Meta:
         verbose_name = 'Стриптиз'
         verbose_name_plural = 'Стриптизы'
+
+
+class PackagePrice(models.Model):
+    apartments_1h = models.PositiveIntegerField(blank=True)
+    apartments_2h = models.PositiveIntegerField(blank=True)
+    apartments_night = models.PositiveIntegerField(blank=True)
+    departure_1h = models.PositiveIntegerField(blank=True)
+    departure_2h = models.PositiveIntegerField(blank=True)
+    departure_night = models.PositiveIntegerField(blank=True)
+    # model = models.OneToOneField(Model, on_delete=models.CASCADE, related_name='price')
+
+    def __str__(self):
+        return f'{self.model}'
+
+    class Meta:
+        verbose_name = 'Пакет цен'
+        verbose_name_plural = ' Пакеты цен'

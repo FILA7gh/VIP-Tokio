@@ -32,3 +32,6 @@ class UserConfirmSerializer(serializers.Serializer):
     class Meta:
         model = User
         fields = 'user_id code'.split()
+
+
+
