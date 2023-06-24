@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from .models import Review
 
 from .models import Model, ModelsGallery
 from apps.services.models import *
@@ -112,11 +113,8 @@ class ModelValidateSerializer(serializers.Serializer):
             raise ValidationError('Слишком мало информации о себе!')
 
 
-# class ReviewSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Review
-#         fields = 'stars text model_name'.split()
-#
-#
-# class ReviewValidateSerializer(serializers.Serializer):
-#     text = serializers.CharField()
+class ReviewSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Review
+        fields = ['id', 'username', 'text']

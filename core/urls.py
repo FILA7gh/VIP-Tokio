@@ -1,3 +1,4 @@
+import requests.utils
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
@@ -21,3 +22,5 @@ urlpatterns = [
 
 urlpatterns += swagger.urlpatterns
 urlpatterns += static(MEDIA_URL, document_root=MEDIA_ROOT)
+
+
