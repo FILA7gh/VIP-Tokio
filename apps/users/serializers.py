@@ -1,37 +1,47 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from rest_framework.exceptions import ValidationError
+from rest_framework.validators import UniqueValidator
+import re
 
 
-class UserValidateSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=100)
+class RegisterSerializer(serializers.Serializer):
+    first_name = serializers.CharField()
+    username = serializers.CharField(min_length=4)
     password = serializers.CharField()
+    password2 = serializers.CharField()
+    email = serializers.EmailField(required=True, validators=[UniqueValidator(queryset=User.objects.all())])
+    email2 = serializers.EmailField()
 
-
-class UserCreateValidateSerializer(UserValidateSerializer):
-
-    def validate_name(self, username):
+    @staticmethod
+    def validate_username(username):
         try:
             User.objects.get(username=username)
         except User.DoesNotExist:
             return username
-        raise ValidationError('user already exists!')
+        return ValidationError('user already exist!')
 
-    def validate_password(self, password):
-        if len(password) < 8 or password.isdigit() or password.isalpha():
-            raise ValidationError('bad password!')
-        else:
+    @staticmethod
+    def validate_password(password):
+        if re.match("^(?=.*?[a-z])(?=.*?[0-9]).{8,}$", password):
             return password
+        raise ValidationError('The password must consist of at least letters and numbers!')
+
+    def create(self, validated_data):
+        validated_data['is_active'] = False
+        first_name = validated_data.get('first_name')
+        username = validated_data.get('username')
+        password = validated_data.get('password')
+        email = validated_data.get('email')
+        user = User.objects.create_user(first_name=first_name, username=username,
+                                        password=password, email=email)
+        return user
 
 
-class UserLoginSerializer(UserValidateSerializer):
-    pass
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField(min_length=4)
+    password = serializers.CharField()
 
 
-class UserConfirmSerializer(serializers.Serializer):
-    class Meta:
-        model = User
-        fields = 'user_id code'.split()
-
-
-
+class ResetSerializer(serializers.Serializer):
+    email = serializers.EmailField()

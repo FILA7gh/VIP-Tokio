@@ -3,7 +3,9 @@ from . import views
 
 
 urlpatterns = [
-    path('registration/', views.RegistrationApiView.as_view()),
-    path('confirm/', views.ConfirmApiView.as_view()),
-    path('authorization/', views.AuthorizationApiView.as_view()),
+    path('register/', views.RegisterAPIView.as_view()),
+    path('login/', views.LoginAPIView.as_view()),
+    path('reset/login/<int:pk>', views.ResetLoginAPIView.as_view()),
+    path('reset/password/<int:pk>', views.ResetPassword.as_view()),
+
 ]

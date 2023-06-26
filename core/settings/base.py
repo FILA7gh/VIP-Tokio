@@ -44,9 +44,7 @@ OTHER_APPS = [
     'drf_yasg',
     'rest_framework.authtoken',
     'corsheaders',
-    'dj_rest_auth',
-    'dj_rest_auth.registration',
-    'rest_framework.authtoken',
+    'django'
 ]
 
 INSTALLED_APPS = [

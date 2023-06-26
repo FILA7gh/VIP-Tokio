@@ -68,7 +68,7 @@ class ModelsGallery(models.Model):
 #
 class Review(models.Model):
     username = models.CharField(max_length=20)
-    text = models.CharField()
+    text = models.CharField(max_length=255)
     model = models.ForeignKey(Model, on_delete=models.CASCADE)
 
     def __str__(self):
