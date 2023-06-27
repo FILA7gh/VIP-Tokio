@@ -1,4 +1,4 @@
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView
 from rest_framework.permissions import AllowAny
 from django.core.mail import EmailMessage
 from rest_framework import status
@@ -7,10 +7,18 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from random import randint
+from rest_framework.exceptions import ValidationError
+from django.shortcuts import get_object_or_404
 
-# from apps.models.permissions import IsAdminOrReadOnly
-from .serializers import RegisterSerializer, LoginSerializer, ResetSerializer
-# from .models import User
+from .serializers import RegisterSerializer, LoginSerializer, ResetSerializer, \
+    ResetConfirmPasswordSerializer, ChangePasswordSerializer, YourTokenObtainPairSerializer
+from .models import ResetPasswordConfirm
+
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+
+class ObtainTokenPairView(TokenObtainPairView):
+    serializer_class = YourTokenObtainPairSerializer
 
 
 class RegisterAPIView(CreateAPIView):
@@ -23,19 +31,19 @@ class RegisterAPIView(CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        user.is_staff = True
+        user.is_staff = False
         user.save()
         password = serializer.validated_data.get('password')
         password2 = serializer.validated_data.get('password2')
 
         if password != password2:
-            return Response('Пароли не совпадают!')
+            raise ValidationError('Пароли не совпадают!')
 
         email = serializer.validated_data.get('email')
         email2 = serializer.validated_data.get('email2')
 
         if email != email2:
-            return Response('Почты не совпадают!')
+            raise ValidationError('Почты не совпадают!')
 
         send_email = EmailMessage(f'Параметры учётной записи для {user.first_name} '
                                   f'на сайте VIP Tokio проститутки Токтогула',
@@ -84,13 +92,14 @@ class ResetAPIVIew(CreateAPIView):
 
 class ResetLoginAPIView(ResetAPIVIew):
     def post(self, request, *args, **kwargs):
-        email = request.data.get('email')
-        user = self.get_object()
 
-        try:
-            User.objects.get(email=email)
-        except User.DoesNotExist:
-            return Response(data={'detail': 'Почта не найдена!'})
+        user_id = self.kwargs['pk']
+        get_object_or_404(User, id=user_id)
+        # Если пользователь с указанным идентификатором не найден,
+        # будет сгенерировано исключение Http404
+
+        email = request.data.get('email')
+        user = get_object_or_404(User, email=email)
 
         send_email = EmailMessage('Восстановление логина на сайте VIP Tokio проститутки Токтогула',
                                   f'Здравствуйте, На сайте VIP Bishkek проститутки Бишкека была сделана '
@@ -109,24 +118,27 @@ class ResetLoginAPIView(ResetAPIVIew):
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class ResetPassword(ResetAPIVIew):
+class ResetPasswordAPIView(CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = ResetSerializer
+    permission_classes = [AllowAny]
+    host_user = 'settings.base.EMAIL_HOST_USER'
 
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
-        user = self.get_object()
 
         try:
-            User.objects.get(email=email)
+            user = User.objects.get(email=email)
         except User.DoesNotExist:
             return Response(data={'detail': 'Почта не найдена!'})
 
-        code = randint(100000, 1000000)
-
+        code = ResetPasswordConfirm.objects.create(username=user.username, code=str(randint(100000, 1000000)))
+        print(code.username, code.code)
         send_email = EmailMessage('Запрос сброса пароля на сайте VIP Tokio проститутки Токтогула',
                                   f'Здравствуйте,\n На сайте VIP Tokio проститутки был сделан запрос на '
                                   f'восстановление пароля к вашей учётной записи. Чтобы восстановить пароль'
                                   f' вам потребуется ввести указанный ниже код подтверждения.\n'
-                                  f'Код подтверждения: {code}.\n'
+                                  f'Код подтверждения: {code.code}.\n'
                                   f'Для ввода кода подтверждения перейдите на страницу по ссылке ниже.\n'
                                   f'https://vibish.com/reset?layout=confirm&token\nСпасибо.',
                                   from_email=self.host_user, to=[email])
@@ -139,3 +151,49 @@ class ResetPassword(ResetAPIVIew):
 
         return Response(data='Не удалось отправить письмо для восстановления пароля.',
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class ResetConfirmPasswordAPIView(CreateAPIView):
+    queryset = ResetPasswordConfirm.objects.all()
+    serializer_class = ResetConfirmPasswordSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        username = request.data.get('username')
+        code = request.data.get('code')
+
+        try:
+            ResetPasswordConfirm.objects.get(username=username, code=code)
+        except ResetPasswordConfirm.DoesNotExist:
+            return Response(data={'detail': 'Не удалось восстановить пароль, поскольку проверочный код'
+                                            ' был указан неверно. Пользователь не найден!'},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        return Response(data={'detail': 'success'}, status=status.HTTP_200_OK)
+
+
+class ChangePasswordAPIView(UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = ChangePasswordSerializer
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user_id = self.kwargs['pk']
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response(data={'detail': 'ID пользователя не найден!'})
+
+        password = request.data.get('password')
+        password_2 = request.data.get('password_2')
+
+        if password != password_2:
+            raise ValidationError('Пароли не совпадают!')
+
+        user.set_password(password)  # Используем set_password() для изменения пароля
+        user.save()
+
+        return Response(data={'detail': 'Пароль успешно изменен'})

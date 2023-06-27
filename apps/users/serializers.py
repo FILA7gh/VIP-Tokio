@@ -3,6 +3,16 @@ from django.contrib.auth.models import User
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueValidator
 import re
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+
+class YourTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        # Дополнительная логика, если необходимо
+        token = super().get_token(user)
+        # Дополнительная логика, если необходимо
+        return token
 
 
 class RegisterSerializer(serializers.Serializer):
@@ -45,3 +55,19 @@ class LoginSerializer(serializers.Serializer):
 
 class ResetSerializer(serializers.Serializer):
     email = serializers.EmailField()
+
+
+class ResetConfirmPasswordSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    code = serializers.CharField()
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    password = serializers.CharField()
+    password_2 = serializers.CharField()
+
+    @staticmethod
+    def validate_password(password):
+        if re.match("^(?=.*?[a-z])(?=.*?[0-9]).{8,}$", password):
+            return password
+        raise ValidationError('The password must consist of at least letters and numbers!')
