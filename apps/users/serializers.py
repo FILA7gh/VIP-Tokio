@@ -86,3 +86,9 @@ class ChangePasswordSerializer(serializers.Serializer):
         if re.match("^(?=.*?[a-z])(?=.*?[0-9]).{8,}$", password):
             return password
         raise ValidationError('The password must consist of at least letters and numbers!')
+
+
+class UserProfileSerialazer(serializers.ModelSerializer):
+    class Meta:
+        model = User.objects.all()
+        fields = 'id first_name username'.split()

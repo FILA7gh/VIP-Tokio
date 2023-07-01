@@ -1,5 +1,5 @@
-from rest_framework.generics import GenericAPIView
-from rest_framework.permissions import AllowAny
+from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
 from rest_framework.response import Response
 from django.contrib.auth.models import User
@@ -7,21 +7,21 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from random import randint
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import logout
 
-from .serializers import RegisterSerializer, LoginSerializer, ResetSerializer, \
-    ResetConfirmPasswordSerializer, ChangePasswordSerializer, YourTokenObtainPairSerializer
+from . import serializers
 from .models import ResetPasswordConfirm
 from .utils import send_email
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 class ObtainTokenPairView(TokenObtainPairView):
-    serializer_class = YourTokenObtainPairSerializer
+    serializer_class = serializers.YourTokenObtainPairSerializer
 
 
 class RegisterAPIView(GenericAPIView):
     permission_classes = [AllowAny]
-    serializer_class = RegisterSerializer
+    serializer_class = serializers.RegisterSerializer
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -35,7 +35,7 @@ class RegisterAPIView(GenericAPIView):
                    body=f'Здравствуйте {user.first_name}\n'
                            f'Спасибо за регистрацию на VIP Tokio проститутки Токтогула.\n'
                            f'Теперь вы можете войти на https://vip-tokio.com/ используя следующие данные:\n'
-                           f'Логин: {user.username}\nПароль: {user.password}',
+                           f'Логин: {user.username}',
                    to_email=[user.email])
 
         if send_email:
@@ -49,7 +49,7 @@ class RegisterAPIView(GenericAPIView):
 
 
 class LoginAPIView(GenericAPIView):
-    serializer_class = LoginSerializer
+    serializer_class = serializers.LoginSerializer
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
@@ -69,7 +69,7 @@ class LoginAPIView(GenericAPIView):
 
 
 class ResetAPIVIew(GenericAPIView):
-    serializer_class = ResetSerializer
+    serializer_class = serializers.ResetSerializer
     permission_classes = [AllowAny]
 
 
@@ -128,7 +128,7 @@ class ResetPasswordAPIView(ResetAPIVIew):
 
 
 class ResetConfirmPasswordAPIView(GenericAPIView):
-    serializer_class = ResetConfirmPasswordSerializer
+    serializer_class = serializers.ResetConfirmPasswordSerializer
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
@@ -148,7 +148,7 @@ class ResetConfirmPasswordAPIView(GenericAPIView):
 
 
 class ChangePasswordAPIView(GenericAPIView):
-    serializer_class = ChangePasswordSerializer
+    serializer_class = serializers.ChangePasswordSerializer
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
@@ -161,3 +161,17 @@ class ChangePasswordAPIView(GenericAPIView):
         user.set_password(serializer.validated_data.get('password'))  # Используем set_password() для изменения пароля
         user.save()
         return Response(data={'detail': 'Пароль успешно изменен'})
+
+
+class LogoutAPIView(GenericAPIView):
+    @staticmethod
+    def post(request, *args, **kwargs):
+        logout(request)
+
+        return Response(data={'detail': 'Вы успешно вышли'})
+
+
+class UserProfileAPIView(RetrieveUpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = serializers.UserProfileSerialazer
+    permission_classes = [AllowAny]
