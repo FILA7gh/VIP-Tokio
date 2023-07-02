@@ -90,5 +90,5 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 class UserProfileSerialazer(serializers.ModelSerializer):
     class Meta:
-        model = User.objects.all()
-        fields = 'id first_name username'.split()
+        model = User
+        fields = 'id first_name username date_joined'.split()

@@ -171,7 +171,31 @@ class LogoutAPIView(GenericAPIView):
         return Response(data={'detail': 'Вы успешно вышли'})
 
 
-class UserProfileAPIView(RetrieveUpdateAPIView):
-    queryset = User.objects.all()
-    serializer_class = serializers.UserProfileSerialazer
+class UserProfileAPIView(GenericAPIView):
     permission_classes = [AllowAny]
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return serializers.UserProfileSerialazer
+        elif self.request.method == 'PUT':
+            return serializers.RegisterSerializer
+
+    def get(self, request, pk):
+        user = request.user
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exceptions=True)
+
+        user = User.objects.all()
+
+        user.username = serializer.validated_data.get('username')
+        user.first_name = serializer.validated_data.get('first_name')
+        user.password = serializer.validated_data.get('password')
+        user.email = serializer.validated_data.get('email')
+
+        user.save()
+
+        return Response(data={'detail': 'success'}, status=status.HTTP_201_CREATED)
