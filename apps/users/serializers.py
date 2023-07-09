@@ -88,7 +88,9 @@ class ChangePasswordSerializer(serializers.Serializer):
         raise ValidationError('The password must consist of at least letters and numbers!')
 
 
-class UserProfileSerialazer(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.ModelSerializer):
+    last_visit = serializers.DateTimeField()
+
     class Meta:
         model = User
-        fields = 'id first_name username date_joined'.split()
+        fields = 'id first_name username date_joined last_visit'.split()

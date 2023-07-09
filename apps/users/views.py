@@ -176,7 +176,7 @@ class UserProfileAPIView(GenericAPIView):
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
-            return serializers.UserProfileSerialazer
+            return serializers.UserProfileSerializer
         elif self.request.method == 'PUT':
             return serializers.RegisterSerializer
 
