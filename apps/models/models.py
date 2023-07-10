@@ -59,11 +59,11 @@ class ModelsGallery(models.Model):
         verbose_name = 'Галерея'
         verbose_name_plural = 'Галереи'
 
-
-class Review(models.Model):
-    username = models.CharField(max_length=20)
-    text = models.CharField(max_length=255)
-    model = models.ForeignKey(Model, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.model
+#
+# class Review(models.Model):
+#     username = models.CharField(max_length=20)
+#     text = models.CharField(max_length=255)
+#     model = models.ForeignKey(Model, on_delete=models.CASCADE)
+#
+#     def __str__(self):
+#         return self.model

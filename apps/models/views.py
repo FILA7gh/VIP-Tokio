@@ -2,8 +2,8 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
-from .models import Model, Review
-from .serializers import ModelSerializer, ModelDetailSerializer, ModelValidateSerializer, ReviewSerializer
+from .models import Model
+from .serializers import ModelSerializer, ModelDetailSerializer, ModelValidateSerializer
 from .permissions import *
 
 
@@ -23,7 +23,16 @@ class ModelAPIView(ListCreateAPIView):
         serializer.is_valid(raise_exception=True)
         model = Model.objects.create(**serializer.validated_data)
 
-        return Response(data=ModelSerializer(model).data)
+        model.package_price = serializer.validated_data['package_price']
+        model.basic_service.set(serializer.validated_data['basic_services'])
+        model.additional_service.set(serializer.validated_data['additional_service'])
+        model.massage.set(serializer.validated_data['massage'])
+        model.extreme.set(serializer.validated_data['extreme'])
+        model.sadomazo.set(serializer.validated_data['sadomazo'])
+        model.striptease.set(serializer.validated_data['striptease'])
+        model.save()
+
+        return Response(data=ModelSerializer(model, context={'request': request}).data)
 
 
 class ModelDetailAPIView(RetrieveUpdateDestroyAPIView):
@@ -34,12 +43,23 @@ class ModelDetailAPIView(RetrieveUpdateDestroyAPIView):
     def put(self, request, *args, **kwargs):
         serializer = ModelValidateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        model = Model.objects.all()
-        serializer.update(model, serializer.validated_data)
+        model = self.get_object()
+
+        package_price = serializer.validated_data.get('package_price')
+        basic_service = serializer.validated_data.pop('basic_service', [])
+        additional_service = serializer.validated_data.pop('additional_service', [])
+        massage = serializer.validated_data.pop('massage', [])
+        extreme = serializer.validated_data.pop('extreme', [])
+        sadomazo = serializer.validated_data.pop('sadomazo', [])
+        striptease = serializer.validated_data.pop('striptease', [])
+
+        serializer.save(package_price=package_price, basic_service=basic_service,
+                        additional_service=additional_service, massage=massage,
+                        extreme=extreme, sadomazo=sadomazo, striptease=striptease)
 
         return Response(data=ModelSerializer(model).data)
 
-
-class ReviewAPIView(ListCreateAPIView):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
+#
+# class ReviewAPIView(ListCreateAPIView):
+#     queryset = Review.objects.all()
+#     serializer_class = ReviewSerializer
