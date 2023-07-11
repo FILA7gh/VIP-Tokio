@@ -137,3 +137,4 @@ class ModelValidateSerializer(serializers.Serializer):
 #     class Meta:
 #         model = Review
 #         fields = ['id', 'username', 'text']
+#
