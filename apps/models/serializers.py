@@ -3,7 +3,9 @@ import re
 
 # from .models import Review
 from .models import Model, ModelsGallery
-from apps.services.models import *
+from apps.services.models import BasicService, AdditionalService, Massage, Striptease, SadoMazo, Extreme, PackagePrice
+from apps.services.serializers import PackagePriceSerializer, BasicServiceSerializer, AdditionalServiceSerializer, \
+    MassageSerializer, StripteaseSerializer, SadoMazoSerializer, ExtremeSerializer
 
 
 # Gallery
@@ -13,70 +15,6 @@ class GallerySerializer(serializers.ModelSerializer):
     class Meta:
         model = ModelsGallery
         fields = 'model_id photo'.split()
-
-
-'''Services'''
-
-
-class PackagePriceSerializer(serializers.ModelSerializer):
-    apartments_1h = serializers.IntegerField(max_value=1000000)
-    apartments_2h = serializers.IntegerField(max_value=1000000)
-    apartments_night = serializers.IntegerField(max_value=1000000)
-    departure_1h = serializers.IntegerField(max_value=1000000)
-    departure_2h = serializers.IntegerField(max_value=1000000)
-    departure_night = serializers.IntegerField(max_value=1000000)
-
-    class Meta:
-        model = PackagePrice
-        fields = '__all__'
-
-
-class BasicServiceSerializer(serializers.ModelSerializer):
-    title = serializers.CharField(max_length=255)
-
-    class Meta:
-        model = BasicService
-        fields = ['title']
-
-
-class AdditionalServiceSerializer(serializers.ModelSerializer):
-    title = serializers.CharField(max_length=255)
-
-    class Meta:
-        model = AdditionalService
-        fields = ['title']
-
-
-class MassageSerializer(serializers.ModelSerializer):
-    title = serializers.CharField(max_length=255)
-
-    class Meta:
-        model = Massage
-        fields = ['title']
-
-
-class ExtremeSerializer(serializers.ModelSerializer):
-    title = serializers.CharField(max_length=255)
-
-    class Meta:
-        model = Extreme
-        fields = ['title']
-
-
-class SadoMazoSerializer(serializers.ModelSerializer):
-    title = serializers.CharField(max_length=255)
-
-    class Meta:
-        model = SadoMazo
-        fields = ['title']
-
-
-class StripteaseSerializer(serializers.ModelSerializer):
-    title = serializers.CharField(max_length=255)
-
-    class Meta:
-        model = Striptease
-        fields = ['title']
 
 
 '''Model'''
@@ -91,12 +29,12 @@ class ModelSerializer(serializers.ModelSerializer):
 class ModelDetailSerializer(serializers.ModelSerializer):
     gallery = GallerySerializer(many=True)
     package_price = PackagePriceSerializer()
-    basic_service = BasicServiceSerializer(many=True)
-    additional_service = AdditionalServiceSerializer(many=True)
-    massage = MassageSerializer(many=True)
-    extreme = ExtremeSerializer(many=True)
-    sadomazo = SadoMazoSerializer(many=True)
-    striptease = StripteaseSerializer(many=True)
+    basic_service = BasicServiceSerializer()
+    additional_service = AdditionalServiceSerializer()
+    massage = MassageSerializer()
+    extreme = ExtremeSerializer()
+    sadomazo = SadoMazoSerializer()
+    striptease = StripteaseSerializer()
 
     class Meta:
         model = Model
@@ -123,19 +61,11 @@ class ModelValidateSerializer(serializers.Serializer):
     speak_english = serializers.BooleanField(default=False)
     is_trans = serializers.BooleanField(default=False)
     in_osh = serializers.BooleanField(default=False)
-    package_price = serializers.PrimaryKeyRelatedField(queryset=PackagePrice.objects.all(), required=True)
-    basic_service = serializers.PrimaryKeyRelatedField(queryset=BasicService.objects.all(), many=True, required=True)
-    additional_service = serializers.PrimaryKeyRelatedField(queryset=AdditionalService.objects.all(),
-                                                            many=True, required=False)
-    massage = serializers.PrimaryKeyRelatedField(queryset=Massage.objects.all(), many=True, required=False)
-    extreme = serializers.PrimaryKeyRelatedField(queryset=Extreme.objects.all(), many=True, required=False)
-    sadomazo = serializers.PrimaryKeyRelatedField(queryset=SadoMazo.objects.all(), many=True, required=False)
-    striptease = serializers.PrimaryKeyRelatedField(queryset=Striptease.objects.all(), many=True, required=False)
 
     @staticmethod
     def validate_phone_number(phone_number):
         if not re.match(r'^\+?\d{10,16}$', phone_number):
-            raise serializers.ValidationError('Номер телефона действителен')
+            raise serializers.ValidationError('Номер телефона не действителен!')
         return phone_number
 
     @staticmethod
@@ -145,43 +75,33 @@ class ModelValidateSerializer(serializers.Serializer):
         return age
 
     @staticmethod
-    def validate_height(height):
-        if not 150 < height < 190:
-            raise serializers.ValidationError('Рост строго 150-190!')
-        return height
-
-    @staticmethod
-    def validate_weight(weight):
-        if not 45 < weight < 70:
-            raise serializers.ValidationError('Вес строго 45-70')
-        return weight
-
-    @staticmethod
     def validate_description(description):
         if len(description) < 20:
-            raise serializers.ValidationError('Слишком мало информации о себе!')
+            raise serializers.ValidationError('Слишком мало информации о себе!, '
+                                              'минимум 20 символов!')
+
         return description
 
     def create(self, validated_data):
         package_price_data = validated_data.pop('package_price')
-        basic_service = validated_data.pop('basic_service', [])
-        additional_service = validated_data.pop('additional_service', [])
-        massage = validated_data.pop('massage', [])
-        extreme = validated_data.pop('extreme', [])
-        sadomazo = validated_data.pop('sadomazo', [])
-        striptease = validated_data.pop('striptease', [])
+        basic_service_data = validated_data.pop('basic_service')
+        additional_service_data = validated_data.pop('additional_service')
+        massage_data = validated_data.pop('massage')
+        sadomazo_data = validated_data.pop('sadomazo')
+        striptease_data = validated_data.pop('striptease')
+        extreme_data = validated_data.pop('extreme')
 
         model = Model.objects.create(**validated_data)
 
-        for package_price_item in package_price_data:
-            PackagePrice.objects.create(model=model, **package_price_item)
+        model.package_price = PackagePrice.objects.create(**package_price_data)
+        model.basic_service = BasicService.objects.create(**basic_service_data)
+        model.additional_service = AdditionalService.objects.create(**additional_service_data)
+        model.massage = Massage.objects.create(**massage_data)
+        model.sadomazo = SadoMazo.objects.create(**sadomazo_data)
+        model.striptease = Striptease.objects.create(**striptease_data)
+        model.extreme = Extreme.objects.create(**extreme_data)
 
-        model.basic_service.set(basic_service)
-        model.additional_service.set(additional_service)
-        model.massage.set(massage)
-        model.extreme.set(extreme)
-        model.sadomazo.set(sadomazo)
-        model.striptease.set(striptease)
+        model.save()
 
         return model
 
@@ -203,11 +123,11 @@ class ModelValidateSerializer(serializers.Serializer):
         instance.is_trans = validated_data.get('is_trans', instance.is_trans)
         instance.in_osh = validated_data.get('in_osh', instance.in_osh)
         instance.package_price = validated_data.get('package_price', instance.package_price)
-        instance.basic_service.set(validated_data.get('basic_service', instance.basic_service.all()))
-        instance.additional_service.set(validated_data.get('additional_service', instance.additional_service.all()))
-        instance.massage.set(validated_data.get('massage', instance.massage.all()))
-        instance.extreme.set(validated_data.get('extreme', instance.extreme.all()))
-        instance.sadomazo.set(validated_data.get('sadomazo', instance.sadomazo.all()))
+        instance.basic_service = validated_data.get('basic_service', instance.basic_service)
+        instance.additional_service = validated_data.get('additional_service', instance.additional_service)
+        instance.massage = validated_data.get('massage', instance.massage)
+        instance.extreme = validated_data.get('extreme', instance.extreme)
+        instance.sadomazo = validated_data.get('sadomazo', instance.sadomazo)
         instance.save()
 
         return instance

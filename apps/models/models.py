@@ -14,31 +14,44 @@ class Model(models.Model):
                      ('3.5', '3.5'), ('4', '4'), ('4+', '4+'))
 
     # models
-    nickname = models.CharField(max_length=100)
-    description = models.TextField()
-    age = models.PositiveIntegerField()
-    appearance = models.CharField(choices=CHOICE_APPEARANCE, max_length=20)  # внешность
-    height = models.PositiveIntegerField()
-    weight = models.PositiveIntegerField()
-    eyes = models.CharField(choices=CHOICE_EYES, max_length=20)
-    hairs = models.CharField(choices=CHOICE_HAIRS, max_length=20)
-    type = models.CharField(choices=CHOICE_TYPE, max_length=20)
-    area = models.CharField(max_length=100, null=True, blank=True)
-    breast = models.CharField(choices=CHOICE_BREAST, max_length=20)  # грудь
-    phone_number = models.CharField(max_length=16)
-    schedule = models.CharField(max_length=19)  # график работы
-    speak_english = models.BooleanField(default=False)
-    is_trans = models.BooleanField(default=False)
-    in_osh = models.BooleanField(default=False)
+    nickname = models.CharField(max_length=100, verbose_name='Имя в анкете')
+    description = models.TextField(verbose_name='О себе и услугах')
+    age = models.PositiveIntegerField(verbose_name='Возраст')
+    appearance = models.CharField(choices=CHOICE_APPEARANCE, max_length=20, verbose_name='Внешность')
+    height = models.PositiveIntegerField(verbose_name='Рост (см)')
+    weight = models.PositiveIntegerField(verbose_name='Вес')
+    eyes = models.CharField(choices=CHOICE_EYES, max_length=20, verbose_name='Глаза')
+    hairs = models.CharField(choices=CHOICE_HAIRS, max_length=20, verbose_name='Цвет волос')
+    type = models.CharField(choices=CHOICE_TYPE, max_length=20, verbose_name='Тип')
+    area = models.CharField(max_length=100, null=True, blank=True, verbose_name='Район')
+    breast = models.CharField(choices=CHOICE_BREAST, max_length=20, verbose_name='Размер груди')
+    phone_number = models.CharField(max_length=16, verbose_name='Телефон')
+    schedule = models.CharField(max_length=19, verbose_name='Рабочее время')
+    speak_english = models.BooleanField(default=False, verbose_name='I speak English')
+    is_trans = models.BooleanField(default=False, verbose_name='Я транс')
+    in_osh = models.BooleanField(default=False, verbose_name='В оше')
 
     # services
-    package_price = models.OneToOneField(PackagePrice, on_delete=models.CASCADE, related_name='model')
-    basic_service = models.ManyToManyField(BasicService)
-    additional_service = models.ManyToManyField(AdditionalService, blank=True)  # доп услуги
-    massage = models.ManyToManyField(Massage, blank=True)
-    extreme = models.ManyToManyField(Extreme, blank=True)
-    sadomazo = models.ManyToManyField(SadoMazo, blank=True)
-    striptease = models.ManyToManyField(Striptease, blank=True)
+    package_price = models.OneToOneField(PackagePrice, on_delete=models.CASCADE, related_name='model',
+                                         verbose_name='Выезд, апартаменты', null=True)
+
+    basic_service = models.OneToOneField(BasicService, on_delete=models.CASCADE, related_name='model',
+                                         verbose_name='Основные услуги', null=True)
+
+    additional_service = models.OneToOneField(AdditionalService, on_delete=models.CASCADE, related_name='model',
+                                              blank=True, verbose_name='Дополнительные услуги', null=True)
+
+    massage = models.OneToOneField(Massage, on_delete=models.CASCADE, related_name='model',
+                                   blank=True, verbose_name='Массаж', null=True)
+
+    striptease = models.OneToOneField(Striptease, on_delete=models.CASCADE, related_name='model',
+                                      blank=True, verbose_name='Стриптиз', null=True)
+
+    sadomazo = models.OneToOneField(SadoMazo, on_delete=models.CASCADE, related_name='model',
+                                    blank=True, verbose_name='Садо-мазо', null=True)
+
+    extreme = models.OneToOneField(Extreme, on_delete=models.CASCADE, related_name='model',
+                                   blank=True, verbose_name='Экстрим', null=True)
 
     def __str__(self):
         return self.nickname
