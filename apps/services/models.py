@@ -14,7 +14,7 @@ class BasicService(models.Model):
     anal_sex = models.CharField(choices=CHOICES, max_length=10, blank=True, verbose_name='Анальный секс')
 
     def __str__(self):
-        return f'{self.model}'
+        return f'{self.id}'
 
     class Meta:
         verbose_name = 'Основная услуга'
@@ -32,7 +32,7 @@ class AdditionalService(models.Model):
     escort = models.BooleanField(default=False, blank=True, verbose_name='Сопровождение')
 
     def __str__(self):
-        return f'{self.model}'
+        return f'{self.id}'
 
     class Meta:
         verbose_name = 'Дополнительная услуга'
@@ -49,7 +49,7 @@ class Massage(models.Model):
     sakura_branch = models.BooleanField(default=False, blank=True, verbose_name='Ветка сакуры')
 
     def __str__(self):
-        return f'{self.model}'
+        return f'{self.id}'
 
     class Meta:
         verbose_name = 'Массаж'
@@ -63,7 +63,7 @@ class Striptease(models.Model):
     easy_lesbian_show = models.BooleanField(default=False, blank=True, verbose_name='Легкое лесби шоу')
 
     def __str__(self):
-        return f'{self.model}'
+        return f'{self.id}'
 
     class Meta:
         verbose_name = 'Стриптиз'
@@ -80,7 +80,7 @@ class SadoMazo(models.Model):
     trampling = models.BooleanField(default=False, blank=True, verbose_name='Трамплинг')
 
     def __str__(self):
-        return f'{self.model}'
+        return f'{self.id}'
 
     class Meta:
         verbose_name = 'Садо Мазо'
@@ -96,7 +96,7 @@ class Extreme(models.Model):
     fisting_vaginal = models.BooleanField(default=False, blank=True, verbose_name='Фистинг вагинальный')
 
     def __str__(self):
-        return f'{self.model}'
+        return f'{self.id}'
 
     class Meta:
         verbose_name = 'Экстрим'

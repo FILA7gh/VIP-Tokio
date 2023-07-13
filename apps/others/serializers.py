@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Support, MiniBlog
+from .models import Support, MiniBlog, AboutUs, DidYouKnow, Help
 
 
 class SupportSerializer(serializers.ModelSerializer):
@@ -23,7 +23,6 @@ class MiniBlogSerializer(serializers.ModelSerializer):
 
 
 class MiniBlogDetailSerializer(serializers.ModelSerializer):
-    # user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = MiniBlog
@@ -33,6 +32,17 @@ class MiniBlogDetailSerializer(serializers.ModelSerializer):
 class AboutUsSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = MiniBlog
+        model = AboutUs
         fields = '__all__'
 
+
+class HelpSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Help
+        fields = '__all__'
+
+
+class DidYouKnowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DidYouKnow
+        fields = '__all__'

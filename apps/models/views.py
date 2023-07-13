@@ -1,6 +1,7 @@
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from .models import Model
 from .serializers import ModelSerializer, ModelDetailSerializer, ModelValidateSerializer
@@ -10,7 +11,7 @@ from .permissions import *
 class ModelAPIView(ListCreateAPIView):
     queryset = Model.objects.all()
     pagination_class = PageNumberPagination
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -38,7 +39,7 @@ class ModelAPIView(ListCreateAPIView):
 class ModelDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Model.objects.all()
     serializer_class = ModelDetailSerializer
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def put(self, request, *args, **kwargs):
         serializer = ModelValidateSerializer(data=request.data)
