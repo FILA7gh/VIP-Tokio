@@ -26,9 +26,9 @@ class Help(models.Model):
 
 
 class Support(models.Model):  # Техподдержка
-    name = models.CharField(max_length=20, unique=True, verbose_name='Имя', null=True)
-    mail = models.EmailField(max_length=50, unique=True, verbose_name='E-mail', null=True)
-    subject = models.CharField(max_length=20, verbose_name='Тема', null=True)
+    name = models.CharField(max_length=50, unique=True, verbose_name='Имя', null=True)
+    mail = models.EmailField(max_length=100, unique=True, verbose_name='E-mail', null=True)
+    subject = models.CharField(max_length=100, verbose_name='Тема', null=True)
     message = models.TextField(verbose_name='Сообщение', null=True)
 
     def __str__(self):
@@ -41,9 +41,7 @@ class Support(models.Model):  # Техподдержка
 
 class MiniBlog(models.Model):  # Мини блог
     title = models.CharField(max_length=100, verbose_name='Название', null=True)
-    image = models.ImageField(verbose_name='Фотография', blank=True, null=True)
     text = models.TextField(verbose_name='Текст', null=True)
-    # user = models.ForeignKey('User', verbose_name='Пользователь', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
@@ -51,6 +49,15 @@ class MiniBlog(models.Model):  # Мини блог
     class Meta:
         verbose_name = 'Мини блог'
         verbose_name_plural = 'Мини блог'
+
+
+class MiniBlogGallery(models.Model):
+    photo = models.ImageField(upload_to='MiniBlog', blank=True)
+    mini_blog = models.ForeignKey(MiniBlog, on_delete=models.CASCADE, related_name='gallery')
+
+    class Meta:
+        verbose_name = 'Галерея'
+        verbose_name_plural = 'Галерея'
 
 
 class AboutUs(models.Model):  # О нас
@@ -63,3 +70,25 @@ class AboutUs(models.Model):  # О нас
     class Meta:
         verbose_name = 'О нас'
         verbose_name_plural = 'О нас'
+
+
+class Rules(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+
+    class Meta:
+        verbose_name = 'Правила'
+        verbose_name_plural = 'Правила'
+
+
+class Contact(models.Model):
+    phone_number_1 = models.CharField(max_length=16, verbose_name='номер телефона')
+    phone_number_2 = models.CharField(max_length=16, blank=True, verbose_name='номер телефона')
+    phone_number_3 = models.CharField(max_length=16, blank=True, verbose_name='номер телефона')
+    social_media_1 = models.URLField(verbose_name='соц сеть')
+    social_media_2 = models.URLField(blank=True, verbose_name='соц сеть')
+    social_media_3 = models.URLField(blank=True, verbose_name='соц сеть')
+
+    class Meta:
+        verbose_name = 'Контакт'
+        verbose_name_plural = 'Контакты'

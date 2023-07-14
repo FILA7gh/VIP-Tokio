@@ -14,16 +14,18 @@ class GallerySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ModelsGallery
-        fields = 'model_id photo'.split()
+        fields = ['model_id', 'photo']
 
 
 '''Model'''
 
 
 class ModelSerializer(serializers.ModelSerializer):
+    gallery = GallerySerializer(many=True)
+
     class Meta:
         model = Model
-        fields = ['id', 'nickname', 'height', 'weight', 'breast', 'phone_number']
+        fields = ['id', 'gallery', 'nickname', 'height', 'weight', 'breast', 'phone_number']
 
 
 class ModelDetailSerializer(serializers.ModelSerializer):
