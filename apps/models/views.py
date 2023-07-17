@@ -5,13 +5,12 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from .models import Model
 from .serializers import ModelSerializer, ModelDetailSerializer, ModelValidateSerializer
-from .permissions import *
 
 
 class ModelAPIView(ListCreateAPIView):
     queryset = Model.objects.all()
     pagination_class = PageNumberPagination
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    # permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -22,24 +21,14 @@ class ModelAPIView(ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = ModelValidateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        model = Model.objects.create(**serializer.validated_data)
-
-        model.package_price = serializer.validated_data['package_price']
-        model.basic_service.set(serializer.validated_data['basic_services'])
-        model.additional_service.set(serializer.validated_data['additional_service'])
-        model.massage.set(serializer.validated_data['massage'])
-        model.extreme.set(serializer.validated_data['extreme'])
-        model.sadomazo.set(serializer.validated_data['sadomazo'])
-        model.striptease.set(serializer.validated_data['striptease'])
-        model.save()
-
+        model = serializer.save()
         return Response(data=ModelSerializer(model, context={'request': request}).data)
 
 
 class ModelDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Model.objects.all()
     serializer_class = ModelDetailSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    # permission_classes = [IsAuthenticatedOrReadOnly]
 
     def put(self, request, *args, **kwargs):
         serializer = ModelValidateSerializer(data=request.data)

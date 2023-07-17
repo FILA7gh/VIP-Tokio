@@ -2,37 +2,27 @@ from django.db import models
 
 
 class BasicService(models.Model):
-    CHOICES = (('Yes', 'Да'), ('No', 'Нет'))
-
-    classic_sex = models.BooleanField(default=False, blank=True, verbose_name='Классический секс')
-    condom_blowjob = models.BooleanField(default=False, blank=True, verbose_name='Минет с презервативом')
-    cunnilingus = models.BooleanField(default=False, blank=True, verbose_name='Кунилингус')
-    group_sex = models.BooleanField(default=False, blank=True, verbose_name='Групповой секс')
-    lesbian_sex = models.BooleanField(default=False, blank=True, verbose_name='Лесбийский секс')
-    blowjob_without_condom = models.CharField(choices=CHOICES, max_length=10, blank=True,
-                                              verbose_name='Минет без презерватива')
-    anal_sex = models.CharField(choices=CHOICES, max_length=10, blank=True, verbose_name='Анальный секс')
+    title = models.CharField(max_length=50, verbose_name='Основная услуга', null=True)
 
     def __str__(self):
-        return f'{self.id}'
+        return f'{self.title}'
 
     class Meta:
         verbose_name = 'Основная услуга'
         verbose_name_plural = 'Основные услуги'
 
 
+# class BasicServiceBool(models.Model):
+#     CHOICES = (('Yes', 'Да'), ('No', 'Нет'))
+#
+#     boolean = models.CharField(choices=CHOICES, max_length=20, null=True)
+
+
 class AdditionalService(models.Model):
-    cum_in_mouth = models.BooleanField(default=False, blank=True, verbose_name='Кончить в рот')
-    cum_on_face = models.BooleanField(default=False, blank=True, verbose_name='Кончить на лицо')
-    deep_blowjob = models.BooleanField(default=False, blank=True, verbose_name='Глубокий минет')
-    toys = models.BooleanField(default=False, blank=True, verbose_name='Игрушки')
-    role_playing_games = models.BooleanField(default=False, blank=True, verbose_name='Ролевые игры')
-    services_for_couples = models.BooleanField(default=False, blank=True, verbose_name='Услуги семейной паре')
-    photo_video_shooting = models.BooleanField(default=False, blank=True, verbose_name='Фото/видео съемка')
-    escort = models.BooleanField(default=False, blank=True, verbose_name='Сопровождение')
+    title = models.CharField(max_length=50, verbose_name='Доп услуга', null=True)
 
     def __str__(self):
-        return f'{self.id}'
+        return f'{self.title}'
 
     class Meta:
         verbose_name = 'Дополнительная услуга'
@@ -40,16 +30,10 @@ class AdditionalService(models.Model):
 
 
 class Massage(models.Model):
-    relaxing_massage = models.BooleanField(default=False, blank=True, verbose_name='Расслабляющий массаж')
-    classic_massage = models.BooleanField(default=False, blank=True, verbose_name='Классический массаж')
-    pro_massage = models.BooleanField(default=False, blank=True, verbose_name='Профессиональный массаж')
-    thai_massage = models.BooleanField(default=False, blank=True, verbose_name='Тайский массаж')
-    prostate_massage = models.BooleanField(default=False, blank=True, verbose_name='Массаж простаты')
-    erotic_massage = models.BooleanField(default=False, blank=True, verbose_name='Эротический массаж')
-    sakura_branch = models.BooleanField(default=False, blank=True, verbose_name='Ветка сакуры')
+    title = models.CharField(max_length=50, verbose_name='Массаж', null=True)
 
     def __str__(self):
-        return f'{self.id}'
+        return f'{self.title}'
 
     class Meta:
         verbose_name = 'Массаж'
@@ -57,13 +41,10 @@ class Massage(models.Model):
 
 
 class Striptease(models.Model):
-    striptease_pro = models.BooleanField(default=False, blank=True, verbose_name='Стриптиз профи')
-    striptease_not_pro = models.BooleanField(default=False, blank=True, verbose_name='Стриптиз не профи')
-    candid_lesbian_show = models.BooleanField(default=False, blank=True, verbose_name='Откровенное лесби-шоу')
-    easy_lesbian_show = models.BooleanField(default=False, blank=True, verbose_name='Легкое лесби шоу')
+    title = models.CharField(max_length=50, verbose_name='Стриптиз', null=True)
 
     def __str__(self):
-        return f'{self.id}'
+        return f'{self.title}'
 
     class Meta:
         verbose_name = 'Стриптиз'
@@ -71,16 +52,10 @@ class Striptease(models.Model):
 
 
 class SadoMazo(models.Model):
-    bandage = models.BooleanField(default=False, blank=True, verbose_name='Бандаж')
-    mistress = models.BooleanField(default=False, blank=True, verbose_name='Госпожа')
-    slave = models.BooleanField(default=False, blank=True, verbose_name='Рабыня')
-    light_domination = models.BooleanField(default=False, blank=True, verbose_name='Легкая доминация')
-    flogging = models.BooleanField(default=False, blank=True, verbose_name='Порка')
-    fetish = models.BooleanField(default=False, blank=True, verbose_name='Фетиш')
-    trampling = models.BooleanField(default=False, blank=True, verbose_name='Трамплинг')
+    title = models.CharField(max_length=50, verbose_name='Садо Мазо', null=True)
 
     def __str__(self):
-        return f'{self.id}'
+        return f'{self.title}'
 
     class Meta:
         verbose_name = 'Садо Мазо'
@@ -88,15 +63,10 @@ class SadoMazo(models.Model):
 
 
 class Extreme(models.Model):
-    anilingus = models.BooleanField(default=False, blank=True, verbose_name='Анилингус')
-    golden_rain_issuance = models.BooleanField(default=False, blank=True, verbose_name='Золотой дождь выдача')
-    golden_rain_reception = models.BooleanField(default=False, blank=True, verbose_name='Золотой дождь прием')
-    strapon = models.BooleanField(default=False, blank=True, verbose_name='Страпон')
-    fisting_anal = models.BooleanField(default=False, blank=True, verbose_name='Фистинг анальный')
-    fisting_vaginal = models.BooleanField(default=False, blank=True, verbose_name='Фистинг вагинальный')
+    title = models.CharField(max_length=50, verbose_name='Экстрим', null=True)
 
     def __str__(self):
-        return f'{self.id}'
+        return f'{self.title}'
 
     class Meta:
         verbose_name = 'Экстрим'

@@ -61,7 +61,7 @@ class LoginAPIView(GenericAPIView):
             access = AccessToken.for_user(user)
             return Response({
                 'user': user.username,
-                'token': str(refresh),
+                'refresh_token': str(refresh),
                 'access_token': str(access)
             })
 

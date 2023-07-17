@@ -12,6 +12,7 @@ class Model(models.Model):
     CHOICE_BREAST = (('0-1', '0-1'), ('1', '1'), ('1.5', '1.5'),
                      ('2', '2'), ('2.5', '2.5'), ('3', '3'),
                      ('3.5', '3.5'), ('4', '4'), ('4+', '4+'))
+    CHOICE_COUNTRY = (('Бишкек', 'Бишкек'), ('Ош', 'Ош'))
 
     # models
     nickname = models.CharField(max_length=100, verbose_name='Имя в анкете')
@@ -29,29 +30,29 @@ class Model(models.Model):
     schedule = models.CharField(max_length=19, verbose_name='Рабочее время')
     speak_english = models.BooleanField(default=False, verbose_name='I speak English')
     is_trans = models.BooleanField(default=False, verbose_name='Я транс')
-    in_osh = models.BooleanField(default=False, verbose_name='В оше')
+    country = models.CharField(choices=CHOICE_COUNTRY, default=False, verbose_name='Город', max_length=50)
 
     # services
-    package_price = models.OneToOneField(PackagePrice, on_delete=models.CASCADE, related_name='model',
+    package_price = models.OneToOneField(PackagePrice, on_delete=models.PROTECT, related_name='model',
                                          verbose_name='Выезд, апартаменты', null=True)
 
-    basic_service = models.OneToOneField(BasicService, on_delete=models.CASCADE, related_name='model',
-                                         verbose_name='Основные услуги', null=True)
+    basic_service = models.ManyToManyField(BasicService, related_name='model',
+                                           verbose_name='Основные услуги')
 
-    additional_service = models.OneToOneField(AdditionalService, on_delete=models.CASCADE, related_name='model',
-                                              blank=True, verbose_name='Дополнительные услуги', null=True)
+    additional_service = models.ManyToManyField(AdditionalService, related_name='model',
+                                                blank=True, verbose_name='Дополнительные услуги')
 
-    massage = models.OneToOneField(Massage, on_delete=models.CASCADE, related_name='model',
-                                   blank=True, verbose_name='Массаж', null=True)
+    massage = models.ManyToManyField(Massage, related_name='model',
+                                     blank=True, verbose_name='Массаж')
 
-    striptease = models.OneToOneField(Striptease, on_delete=models.CASCADE, related_name='model',
-                                      blank=True, verbose_name='Стриптиз', null=True)
+    striptease = models.ManyToManyField(Striptease, related_name='model',
+                                        blank=True, verbose_name='Стриптиз')
 
-    sadomazo = models.OneToOneField(SadoMazo, on_delete=models.CASCADE, related_name='model',
-                                    blank=True, verbose_name='Садо-мазо', null=True)
+    sadomazo = models.ManyToManyField(SadoMazo, related_name='model',
+                                      blank=True, verbose_name='Садо-мазо')
 
-    extreme = models.OneToOneField(Extreme, on_delete=models.CASCADE, related_name='model',
-                                   blank=True, verbose_name='Экстрим', null=True)
+    extreme = models.ManyToManyField(Extreme, related_name='model',
+                                     blank=True, verbose_name='Экстрим')
 
     def __str__(self):
         return self.nickname

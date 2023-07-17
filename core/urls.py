@@ -1,9 +1,11 @@
-import requests.utils
+from django.conf.urls.static import static
+from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
 # from django.conf.urls.static import static
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView, TokenObtainPairView
 
+import core.settings.base
 from core.settings.base import MEDIA_URL, MEDIA_ROOT
 from .settings import swagger
 
@@ -21,6 +23,8 @@ urlpatterns = [
 ]
 
 urlpatterns += swagger.urlpatterns
-# urlpatterns += static(MEDIA_URL, document_root=MEDIA_ROOT)
+
+if core.settings.base.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

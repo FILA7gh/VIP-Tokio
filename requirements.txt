@@ -13,6 +13,7 @@ django-dotenv==1.4.2
 django-jazzmin==2.6.0
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
+drf-writable-nested==0.7.0
 drf-yasg==1.21.5
 idna==3.4
 inflection==0.5.1

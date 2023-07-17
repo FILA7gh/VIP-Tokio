@@ -1,5 +1,6 @@
 from rest_framework import serializers
 import re
+from drf_writable_nested.serializers import WritableNestedModelSerializer
 
 # from .models import Review
 from .models import Model, ModelsGallery
@@ -31,22 +32,22 @@ class ModelSerializer(serializers.ModelSerializer):
 class ModelDetailSerializer(serializers.ModelSerializer):
     gallery = GallerySerializer(many=True)
     package_price = PackagePriceSerializer()
-    basic_service = BasicServiceSerializer()
-    additional_service = AdditionalServiceSerializer()
-    massage = MassageSerializer()
-    extreme = ExtremeSerializer()
-    sadomazo = SadoMazoSerializer()
-    striptease = StripteaseSerializer()
+    basic_service = BasicServiceSerializer(many=True)
+    additional_service = AdditionalServiceSerializer(many=True)
+    massage = MassageSerializer(many=True)
+    extreme = ExtremeSerializer(many=True)
+    sadomazo = SadoMazoSerializer(many=True)
+    striptease = StripteaseSerializer(many=True)
 
     class Meta:
         model = Model
         fields = ['id', 'gallery', 'nickname', 'phone_number', 'age', 'height', 'weight',
                   'appearance', 'eyes', 'hairs', 'breast', 'description', 'speak_english',
                   'type', 'package_price', 'area', 'schedule', 'basic_service', 'additional_service',
-                  'massage', 'striptease', 'sadomazo', 'extreme', 'is_trans', 'in_osh']
+                  'massage', 'striptease', 'sadomazo', 'extreme', 'is_trans', 'country']
 
 
-class ModelValidateSerializer(serializers.Serializer):
+class ModelValidateSerializer(WritableNestedModelSerializer):
     nickname = serializers.CharField(max_length=100, required=True)
     description = serializers.CharField(required=True)
     age = serializers.IntegerField(required=True)
@@ -62,77 +63,101 @@ class ModelValidateSerializer(serializers.Serializer):
     schedule = serializers.CharField(max_length=19, required=True)
     speak_english = serializers.BooleanField(default=False)
     is_trans = serializers.BooleanField(default=False)
-    in_osh = serializers.BooleanField(default=False)
+    country = serializers.CharField(default='Бишкек')
 
-    @staticmethod
-    def validate_phone_number(phone_number):
-        if not re.match(r'^\+?\d{10,16}$', phone_number):
-            raise serializers.ValidationError('Номер телефона не действителен!')
-        return phone_number
+    gallery = GallerySerializer(many=True, required=True)
+    package_price = PackagePriceSerializer(required=True)
+    basic_service = BasicServiceSerializer(many=True, required=True)
+    additional_service = AdditionalServiceSerializer(many=True, required=False)
+    massage = MassageSerializer(many=True, required=False)
+    extreme = ExtremeSerializer(many=True, required=False)
+    sadomazo = SadoMazoSerializer(many=True, required=False)
+    striptease = StripteaseSerializer(many=True, required=False)
 
-    @staticmethod
-    def validate_age(age):
-        if not 17 < age < 45:
-            raise serializers.ValidationError('Только девушки или женщины 18-45 лет!')
-        return age
+    class Meta:
+        model = Model
+        fields = '__all__'
 
-    @staticmethod
-    def validate_description(description):
-        if len(description) < 20:
-            raise serializers.ValidationError('Слишком мало информации о себе!, '
-                                              'минимум 20 символов!')
+        @staticmethod
+        def validate_phone_number(phone_number):
+            if not re.match(r'^\+?\d{10,16}$', phone_number):
+                raise serializers.ValidationError('Номер телефона не действителен!')
+            return phone_number
 
-        return description
+        @staticmethod
+        def validate_age(age):
+            if not 17 < age < 45:
+                raise serializers.ValidationError('Только девушки или женщины 18-45 лет!')
+            return age
 
-    def create(self, validated_data):
-        package_price_data = validated_data.pop('package_price')
-        basic_service_data = validated_data.pop('basic_service')
-        additional_service_data = validated_data.pop('additional_service')
-        massage_data = validated_data.pop('massage')
-        sadomazo_data = validated_data.pop('sadomazo')
-        striptease_data = validated_data.pop('striptease')
-        extreme_data = validated_data.pop('extreme')
+        @staticmethod
+        def validate_description(description):
+            if len(description) < 20:
+                raise serializers.ValidationError('Слишком мало информации о себе!, '
+                                                  'минимум 20 символов!')
 
-        model = Model.objects.create(**validated_data)
+            return description
 
-        model.package_price = PackagePrice.objects.create(**package_price_data)
-        model.basic_service = BasicService.objects.create(**basic_service_data)
-        model.additional_service = AdditionalService.objects.create(**additional_service_data)
-        model.massage = Massage.objects.create(**massage_data)
-        model.sadomazo = SadoMazo.objects.create(**sadomazo_data)
-        model.striptease = Striptease.objects.create(**striptease_data)
-        model.extreme = Extreme.objects.create(**extreme_data)
+        def create(self, validated_data):
+            basic_service_data = validated_data.pop('basic_service', [])
+            additional_service_data = validated_data.pop('additional_service', [])
+            massage_data = validated_data.pop('massage', [])
+            striptease_data = validated_data.pop('striptease', [])
+            sadomazo_data = validated_data.pop('sadomazo', [])
+            extreme_data = validated_data.pop('extreme', [])
+            gallery_data = validated_data.pop('gallery', [])
+            package_price_data = validated_data.pop('package_price', {})
 
-        model.save()
+            package_price = PackagePrice.objects.create(**package_price_data)
 
-        return model
+            basic_services = [BasicService.objects.create(**service_data) for service_data in basic_service_data]
+            additional_services = [AdditionalService.objects.create(**service_data) for service_data in
+                                   additional_service_data]
+            massages = [Massage.objects.create(**service_data) for service_data in massage_data]
+            stripteases = [Striptease.objects.create(**service_data) for service_data in striptease_data]
+            sadomazos = [SadoMazo.objects.create(**service_data) for service_data in sadomazo_data]
+            extremes = [Extreme.objects.create(**service_data) for service_data in extreme_data]
 
-    def update(self, instance, validated_data):
-        instance.nickname = validated_data.get('nickname', instance.nickname)
-        instance.description = validated_data.get('description', instance.description)
-        instance.age = validated_data.get('age', instance.age)
-        instance.appearance = validated_data.get('appearance', instance.appearance)
-        instance.height = validated_data.get('height', instance.height)
-        instance.weight = validated_data.get('weight', instance.weight)
-        instance.eyes = validated_data.get('eyes', instance.eyes)
-        instance.hairs = validated_data.get('hairs', instance.hairs)
-        instance.type = validated_data.get('type', instance.type)
-        instance.area = validated_data.get('area', instance.area)
-        instance.breast = validated_data.get('breast', instance.breast)
-        instance.phone_number = validated_data.get('phone_number', instance.phone_number)
-        instance.schedule = validated_data.get('schedule', instance.schedule)
-        instance.speak_english = validated_data.get('speak_english', instance.speak_english)
-        instance.is_trans = validated_data.get('is_trans', instance.is_trans)
-        instance.in_osh = validated_data.get('in_osh', instance.in_osh)
-        instance.package_price = validated_data.get('package_price', instance.package_price)
-        instance.basic_service = validated_data.get('basic_service', instance.basic_service)
-        instance.additional_service = validated_data.get('additional_service', instance.additional_service)
-        instance.massage = validated_data.get('massage', instance.massage)
-        instance.extreme = validated_data.get('extreme', instance.extreme)
-        instance.sadomazo = validated_data.get('sadomazo', instance.sadomazo)
-        instance.save()
+            model = Model.objects.create(package_price=package_price, **validated_data)
 
-        return instance
+            model.basic_service.set(basic_services)
+            model.additional_service.set(additional_services)
+            model.massage.set(massages)
+            model.striptease.set(stripteases)
+            model.sadomazo.set(sadomazos)
+            model.extreme.set(extremes)
+
+            for gallery_item in gallery_data:
+                ModelsGallery.objects.create(model=model, **gallery_item)
+
+            return model
+
+        def update(self, instance, validated_data):
+            instance.nickname = validated_data.get('nickname', instance.nickname)
+            instance.description = validated_data.get('description', instance.description)
+            instance.age = validated_data.get('age', instance.age)
+            instance.appearance = validated_data.get('appearance', instance.appearance)
+            instance.height = validated_data.get('height', instance.height)
+            instance.weight = validated_data.get('weight', instance.weight)
+            instance.eyes = validated_data.get('eyes', instance.eyes)
+            instance.hairs = validated_data.get('hairs', instance.hairs)
+            instance.type = validated_data.get('type', instance.type)
+            instance.area = validated_data.get('area', instance.area)
+            instance.breast = validated_data.get('breast', instance.breast)
+            instance.phone_number = validated_data.get('phone_number', instance.phone_number)
+            instance.schedule = validated_data.get('schedule', instance.schedule)
+            instance.speak_english = validated_data.get('speak_english', instance.speak_english)
+            instance.is_trans = validated_data.get('is_trans', instance.is_trans)
+            instance.country = validated_data.get('country', instance.country)
+            instance.package_price = validated_data.get('package_price', instance.package_price)
+            instance.basic_service.set(validated_data.get('basic_service', instance.basic_service.all()))
+            instance.additional_service.set(validated_data.get('additional_service', instance.additional_service.all()))
+            instance.massage.set(validated_data.get('massage', instance.massage.all()))
+            instance.extreme.set(validated_data.get('extreme', instance.extreme.all()))
+            instance.sadomazo.set(validated_data.get('sadomazo', instance.sadomazo.all()))
+            instance.save()
+
+            return instance
 
 # class ReviewSerializer(serializers.ModelSerializer):
 #
