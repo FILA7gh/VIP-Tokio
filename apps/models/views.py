@@ -2,6 +2,8 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.parsers import MultiPartParser
+from rest_framework import status
 
 from .models import Model
 from .serializers import ModelSerializer, ModelDetailSerializer, ModelValidateSerializer
@@ -10,6 +12,7 @@ from .serializers import ModelSerializer, ModelDetailSerializer, ModelValidateSe
 class ModelAPIView(ListCreateAPIView):
     queryset = Model.objects.all()
     pagination_class = PageNumberPagination
+    parser_classes = [MultiPartParser]
     # permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_serializer_class(self):
@@ -21,8 +24,8 @@ class ModelAPIView(ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = ModelValidateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        model = serializer.save()
-        return Response(data=ModelSerializer(model, context={'request': request}).data)
+        serializer.save()
+        return Response(data=ModelSerializer(serializer, context={'request': request}).data)
 
 
 class ModelDetailAPIView(RetrieveUpdateDestroyAPIView):
@@ -31,23 +34,12 @@ class ModelDetailAPIView(RetrieveUpdateDestroyAPIView):
     # permission_classes = [IsAuthenticatedOrReadOnly]
 
     def put(self, request, *args, **kwargs):
-        serializer = ModelValidateSerializer(data=request.data)
+        instance = self.get_object()
+        serializer = ModelValidateSerializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
-        model = self.get_object()
+        serializer.save()
 
-        package_price = serializer.validated_data.get('package_price')
-        basic_service = serializer.validated_data.pop('basic_service', [])
-        additional_service = serializer.validated_data.pop('additional_service', [])
-        massage = serializer.validated_data.pop('massage', [])
-        extreme = serializer.validated_data.pop('extreme', [])
-        sadomazo = serializer.validated_data.pop('sadomazo', [])
-        striptease = serializer.validated_data.pop('striptease', [])
-
-        serializer.save(package_price=package_price, basic_service=basic_service,
-                        additional_service=additional_service, massage=massage,
-                        extreme=extreme, sadomazo=sadomazo, striptease=striptease)
-
-        return Response(data=ModelSerializer(model).data)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 #
 # class ReviewAPIView(ListCreateAPIView):

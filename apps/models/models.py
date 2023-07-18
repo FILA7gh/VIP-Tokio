@@ -30,7 +30,7 @@ class Model(models.Model):
     schedule = models.CharField(max_length=19, verbose_name='Рабочее время')
     speak_english = models.BooleanField(default=False, verbose_name='I speak English')
     is_trans = models.BooleanField(default=False, verbose_name='Я транс')
-    country = models.CharField(choices=CHOICE_COUNTRY, default=False, verbose_name='Город', max_length=50)
+    country = models.CharField(choices=CHOICE_COUNTRY, default=False, verbose_name='Город', max_length=100)
 
     # services
     package_price = models.OneToOneField(PackagePrice, on_delete=models.PROTECT, related_name='model',

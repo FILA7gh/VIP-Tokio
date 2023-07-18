@@ -51,28 +51,30 @@ class ModelValidateSerializer(WritableNestedModelSerializer):
     nickname = serializers.CharField(max_length=100, required=True)
     description = serializers.CharField(required=True)
     age = serializers.IntegerField(required=True)
-    appearance = serializers.ListField(child=serializers.CharField(required=True))
+    appearance = serializers.CharField(max_length=20, required=True)
     height = serializers.IntegerField(required=True)
     weight = serializers.IntegerField(required=True)
-    eyes = serializers.ListField(child=serializers.CharField(), required=True)
-    hairs = serializers.ListField(child=serializers.CharField(), required=True)
-    type = serializers.ListField(child=serializers.CharField(), required=True)
+    eyes = serializers.CharField(max_length=20, required=True)
+    hairs = serializers.CharField(max_length=20, required=True)
+    type = serializers.CharField(max_length=20, required=True)
     area = serializers.CharField(max_length=100, required=True)
-    breast = serializers.ListField(child=serializers.CharField(), required=True)
+    breast = serializers.CharField(max_length=20, required=True)
     phone_number = serializers.CharField(max_length=16, required=True)
     schedule = serializers.CharField(max_length=19, required=True)
     speak_english = serializers.BooleanField(default=False)
     is_trans = serializers.BooleanField(default=False)
-    country = serializers.CharField(default='Бишкек')
+    country = serializers.CharField(max_length=100, default='Бишкек')
 
-    gallery = GallerySerializer(many=True, required=True)
+    gallery = GallerySerializer(many=True, required=False)
     package_price = PackagePriceSerializer(required=True)
-    basic_service = BasicServiceSerializer(many=True, required=True)
-    additional_service = AdditionalServiceSerializer(many=True, required=False)
-    massage = MassageSerializer(many=True, required=False)
-    extreme = ExtremeSerializer(many=True, required=False)
-    sadomazo = SadoMazoSerializer(many=True, required=False)
-    striptease = StripteaseSerializer(many=True, required=False)
+
+    basic_service = serializers.PrimaryKeyRelatedField(queryset=BasicService.objects.all(), many=True, required=True)
+    additional_service = serializers.PrimaryKeyRelatedField(queryset=AdditionalService.objects.all(),
+                                                            many=True, required=False)
+    massage = serializers.PrimaryKeyRelatedField(queryset=Massage.objects.all(), many=True, required=False)
+    extreme = serializers.PrimaryKeyRelatedField(queryset=Extreme.objects.all(), many=True, required=False)
+    sadomazo = serializers.PrimaryKeyRelatedField(queryset=SadoMazo.objects.all(), many=True, required=False)
+    striptease = serializers.PrimaryKeyRelatedField(queryset=Striptease.objects.all(), many=True, required=False)
 
     class Meta:
         model = Model
@@ -99,36 +101,32 @@ class ModelValidateSerializer(WritableNestedModelSerializer):
             return description
 
         def create(self, validated_data):
-            basic_service_data = validated_data.pop('basic_service', [])
-            additional_service_data = validated_data.pop('additional_service', [])
-            massage_data = validated_data.pop('massage', [])
-            striptease_data = validated_data.pop('striptease', [])
-            sadomazo_data = validated_data.pop('sadomazo', [])
-            extreme_data = validated_data.pop('extreme', [])
-            gallery_data = validated_data.pop('gallery', [])
-            package_price_data = validated_data.pop('package_price', {})
 
-            package_price = PackagePrice.objects.create(**package_price_data)
-
-            basic_services = [BasicService.objects.create(**service_data) for service_data in basic_service_data]
-            additional_services = [AdditionalService.objects.create(**service_data) for service_data in
-                                   additional_service_data]
-            massages = [Massage.objects.create(**service_data) for service_data in massage_data]
-            stripteases = [Striptease.objects.create(**service_data) for service_data in striptease_data]
-            sadomazos = [SadoMazo.objects.create(**service_data) for service_data in sadomazo_data]
-            extremes = [Extreme.objects.create(**service_data) for service_data in extreme_data]
+            galleries = validated_data.pop('gallery')
+            package_price = validated_data.pop('package_price')
+            basic_services = validated_data.pop('basic_service')
+            additional_services = validated_data.pop('additional_service')
+            massages = validated_data.pop('massage')
+            extremes = validated_data.pop('extreme')
+            sado_mazos = validated_data.pop('sado_mazo')
+            stripteazes = validated_data.pop('stripteaze')
 
             model = Model.objects.create(package_price=package_price, **validated_data)
 
-            model.basic_service.set(basic_services)
-            model.additional_service.set(additional_services)
-            model.massage.set(massages)
-            model.striptease.set(stripteases)
-            model.sadomazo.set(sadomazos)
-            model.extreme.set(extremes)
-
-            for gallery_item in gallery_data:
-                ModelsGallery.objects.create(model=model, **gallery_item)
+            for gallery in galleries:
+                ModelsGallery.objects.create(model=model, **gallery)
+            for basic_service in basic_services:
+                BasicService.objects.get(model=model, **basic_service)
+            for additional_service in additional_services:
+                AdditionalService.objects.get(model=model, **additional_service)
+            for massage in massages:
+                Massage.objects.get(model=model, **massage)
+            for extreme in extremes:
+                Extreme.objects.get(model=model, **extreme)
+            for sado_mazo in sado_mazos:
+                SadoMazo.objects.get(model=model, **sado_mazo)
+            for stripteaze in stripteazes:
+                Striptease.objects.get(model=model, **stripteaze)
 
             return model
 
@@ -149,14 +147,26 @@ class ModelValidateSerializer(WritableNestedModelSerializer):
             instance.speak_english = validated_data.get('speak_english', instance.speak_english)
             instance.is_trans = validated_data.get('is_trans', instance.is_trans)
             instance.country = validated_data.get('country', instance.country)
-            instance.package_price = validated_data.get('package_price', instance.package_price)
-            instance.basic_service.set(validated_data.get('basic_service', instance.basic_service.all()))
-            instance.additional_service.set(validated_data.get('additional_service', instance.additional_service.all()))
-            instance.massage.set(validated_data.get('massage', instance.massage.all()))
-            instance.extreme.set(validated_data.get('extreme', instance.extreme.all()))
-            instance.sadomazo.set(validated_data.get('sadomazo', instance.sadomazo.all()))
-            instance.save()
 
+            galleries = validated_data.pop('gallery')
+            package_price = validated_data.pop('package_price')
+            basic_services = validated_data.pop('basic_service')
+            additional_services = validated_data.pop('additional_service')
+            massages = validated_data.pop('massage')
+            extremes = validated_data.pop('extreme')
+            sado_mazos = validated_data.pop('sado_mazo')
+            stripteazes = validated_data.pop('stripteaze')
+
+            instance.gallery.set(galleries)
+            instance.package_price.set(package_price)
+            instance.basic_service.set(basic_services)
+            instance.additional_service.set(additional_services)
+            instance.massage.set(massages)
+            instance.extreme.set(extremes)
+            instance.sado_mazo.set(sado_mazos)
+            instance.stripteaze.set(stripteazes)
+
+            instance.save()
             return instance
 
 # class ReviewSerializer(serializers.ModelSerializer):

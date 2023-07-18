@@ -40,12 +40,12 @@ class ExtremeSerializer(serializers.ModelSerializer):
 
 class PackagePriceSerializer(serializers.ModelSerializer):
 
-    apartments_1h = serializers.IntegerField(max_value=1000000)
-    apartments_2h = serializers.IntegerField(max_value=1000000)
-    apartments_night = serializers.IntegerField(max_value=1000000)
-    departure_1h = serializers.IntegerField(max_value=1000000)
-    departure_2h = serializers.IntegerField(max_value=1000000)
-    departure_night = serializers.IntegerField(max_value=1000000)
+    apartments_1h = serializers.IntegerField(max_value=1000000, required=False)
+    apartments_2h = serializers.IntegerField(max_value=1000000, required=False)
+    apartments_night = serializers.IntegerField(max_value=1000000, required=False)
+    departure_1h = serializers.IntegerField(max_value=1000000, required=False)
+    departure_2h = serializers.IntegerField(max_value=1000000, required=False)
+    departure_night = serializers.IntegerField(max_value=1000000, required=False)
 
     class Meta:
         model = PackagePrice
