@@ -1,10 +1,10 @@
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.parsers import MultiPartParser
 from rest_framework import status
 
+from .permissions import IsAdminOrAuthorOrReadOnly
 from .models import Model
 from .serializers import ModelSerializer, ModelDetailSerializer, ModelValidateSerializer
 
@@ -12,8 +12,8 @@ from .serializers import ModelSerializer, ModelDetailSerializer, ModelValidateSe
 class ModelAPIView(ListCreateAPIView):
     queryset = Model.objects.all()
     pagination_class = PageNumberPagination
-    parser_classes = [MultiPartParser]
-    # permission_classes = [IsAuthenticatedOrReadOnly]
+    # parser_classes = [MultiPartParser]
+    permission_classes = [IsAdminOrAuthorOrReadOnly]
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -24,22 +24,23 @@ class ModelAPIView(ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = ModelValidateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(data=ModelSerializer(serializer, context={'request': request}).data)
+        model = serializer.save()
+        response_serializer = ModelSerializer(model, context={'request': request})
+        return Response(data=response_serializer.data)
 
 
 class ModelDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Model.objects.all()
     serializer_class = ModelDetailSerializer
-    # permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAdminOrAuthorOrReadOnly]
 
     def put(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = ModelValidateSerializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
+        response_serializer = ModelDetailSerializer(instance, context={'request': request})
+        return Response(data=response_serializer.data, status=status.HTTP_200_OK)
 
 #
 # class ReviewAPIView(ListCreateAPIView):

@@ -1,5 +1,6 @@
 from apps.services.models import *
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Model(models.Model):
@@ -32,6 +33,14 @@ class Model(models.Model):
     is_trans = models.BooleanField(default=False, verbose_name='Я транс')
     country = models.CharField(choices=CHOICE_COUNTRY, default=False, verbose_name='Город', max_length=100)
 
+    photo_1 = models.ImageField(upload_to='model_photos', null=True)
+    photo_2 = models.ImageField(upload_to='model_photos', blank=True, null=True)
+    photo_3 = models.ImageField(upload_to='model_photos', blank=True, null=True)
+    photo_4 = models.ImageField(upload_to='model_photos', blank=True, null=True)
+    photo_5 = models.ImageField(upload_to='model_photos', blank=True, null=True)
+    photo_6 = models.ImageField(upload_to='model_photos', blank=True, null=True)
+    photo_7 = models.ImageField(upload_to='model_photos', blank=True, null=True)
+
     # services
     package_price = models.OneToOneField(PackagePrice, on_delete=models.PROTECT, related_name='model',
                                          verbose_name='Выезд, апартаменты', null=True)
@@ -54,6 +63,8 @@ class Model(models.Model):
     extreme = models.ManyToManyField(Extreme, related_name='model',
                                      blank=True, verbose_name='Экстрим')
 
+    author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+
     def __str__(self):
         return self.nickname
 
@@ -62,16 +73,16 @@ class Model(models.Model):
         verbose_name_plural = 'Модели'
 
 
-class ModelsGallery(models.Model):
-    photo = models.ImageField(upload_to='model_photos')
-    model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name='gallery')
-
-    def __str__(self):
-        return f'{self.model}'
-
-    class Meta:
-        verbose_name = 'Галерея'
-        verbose_name_plural = 'Галереи'
+# class ModelsGallery(models.Model):
+#     photo = models.ImageField(upload_to='model_photos')
+#     model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name='gallery')
+#
+#     def __str__(self):
+#         return f'{self.model}'
+#
+#     class Meta:
+#         verbose_name = 'Галерея'
+#         verbose_name_plural = 'Галереи'
 
 #
 # class Review(models.Model):

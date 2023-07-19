@@ -2,49 +2,49 @@ from rest_framework import serializers
 import re
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
-# from .models import Review
-from .models import Model, ModelsGallery
+from .models import Model
 from apps.services.models import BasicService, AdditionalService, Massage, Striptease, SadoMazo, Extreme, PackagePrice
 from apps.services.serializers import PackagePriceSerializer, BasicServiceSerializer, AdditionalServiceSerializer, \
     MassageSerializer, StripteaseSerializer, SadoMazoSerializer, ExtremeSerializer
 
 
-# Gallery
-class GallerySerializer(serializers.ModelSerializer):
-    photo = serializers.ImageField(required=True)
-
-    class Meta:
-        model = ModelsGallery
-        fields = ['model_id', 'photo']
+# # Gallery
+# class GallerySerializer(serializers.ModelSerializer):
+#     photo = serializers.ImageField(required=True)
+#
+#     class Meta:
+#         model = ModelsGallery
+#         fields = ['model_id', 'photo']
 
 
 '''Model'''
 
 
 class ModelSerializer(serializers.ModelSerializer):
-    gallery = GallerySerializer(many=True)
+    # gallery = GallerySerializer(many=True)
 
     class Meta:
         model = Model
-        fields = ['id', 'gallery', 'nickname', 'height', 'weight', 'breast', 'phone_number']
-
+        fields = ['id', 'photo_1', 'nickname', 'height', 'weight', 'breast', 'phone_number']
 
 class ModelDetailSerializer(serializers.ModelSerializer):
-    gallery = GallerySerializer(many=True)
-    package_price = PackagePriceSerializer()
-    basic_service = BasicServiceSerializer(many=True)
-    additional_service = AdditionalServiceSerializer(many=True)
-    massage = MassageSerializer(many=True)
-    extreme = ExtremeSerializer(many=True)
-    sadomazo = SadoMazoSerializer(many=True)
-    striptease = StripteaseSerializer(many=True)
+    # gallery = GallerySerializer(many=True)
+    package_price = PackagePriceSerializer(required=False)
+    basic_service = BasicServiceSerializer(many=True, required=False)
+    additional_service = AdditionalServiceSerializer(many=True, required=False)
+    massage = MassageSerializer(many=True, required=False)
+    extreme = ExtremeSerializer(many=True, required=False)
+    sadomazo = SadoMazoSerializer(many=True, required=False)
+    striptease = StripteaseSerializer(many=True, required=False)
 
     class Meta:
         model = Model
-        fields = ['id', 'gallery', 'nickname', 'phone_number', 'age', 'height', 'weight',
+        fields = ['id', 'photo_1', 'photo_2', 'photo_3', 'photo_4', 'photo_5', 'photo_6', 'photo_7',
+                  'nickname', 'phone_number', 'age', 'height', 'weight',
                   'appearance', 'eyes', 'hairs', 'breast', 'description', 'speak_english',
                   'type', 'package_price', 'area', 'schedule', 'basic_service', 'additional_service',
                   'massage', 'striptease', 'sadomazo', 'extreme', 'is_trans', 'country']
+
 
 
 class ModelValidateSerializer(WritableNestedModelSerializer):
@@ -64,9 +64,16 @@ class ModelValidateSerializer(WritableNestedModelSerializer):
     speak_english = serializers.BooleanField(default=False)
     is_trans = serializers.BooleanField(default=False)
     country = serializers.CharField(max_length=100, default='Бишкек')
+    photo_1 = serializers.ImageField(required=True)
+    photo_2 = serializers.ImageField(required=False)
+    photo_3 = serializers.ImageField(required=False)
+    photo_4 = serializers.ImageField(required=False)
+    photo_5 = serializers.ImageField(required=False)
+    photo_6 = serializers.ImageField(required=False)
+    photo_7 = serializers.ImageField(required=False)
 
-    gallery = GallerySerializer(many=True, required=False)
-    package_price = PackagePriceSerializer(required=True)
+    # gallery = GallerySerializer(many=True, required=False)
+    package_price = PackagePriceSerializer(required=False)
 
     basic_service = serializers.PrimaryKeyRelatedField(queryset=BasicService.objects.all(), many=True, required=True)
     additional_service = serializers.PrimaryKeyRelatedField(queryset=AdditionalService.objects.all(),
@@ -101,8 +108,7 @@ class ModelValidateSerializer(WritableNestedModelSerializer):
             return description
 
         def create(self, validated_data):
-
-            galleries = validated_data.pop('gallery')
+            # galleries = validated_data.pop('gallery')
             package_price = validated_data.pop('package_price')
             basic_services = validated_data.pop('basic_service')
             additional_services = validated_data.pop('additional_service')
@@ -113,20 +119,21 @@ class ModelValidateSerializer(WritableNestedModelSerializer):
 
             model = Model.objects.create(package_price=package_price, **validated_data)
 
-            for gallery in galleries:
-                ModelsGallery.objects.create(model=model, **gallery)
+            # for gallery in galleries:
+            #     ModelsGallery.objects.create(model=model, **gallery)
+
             for basic_service in basic_services:
-                BasicService.objects.get(model=model, **basic_service)
+                BasicService.objects.add(model=model, **basic_service)
             for additional_service in additional_services:
-                AdditionalService.objects.get(model=model, **additional_service)
+                AdditionalService.objects.add(model=model, **additional_service)
             for massage in massages:
-                Massage.objects.get(model=model, **massage)
+                Massage.objects.add(model=model, **massage)
             for extreme in extremes:
-                Extreme.objects.get(model=model, **extreme)
+                Extreme.objects.add(model=model, **extreme)
             for sado_mazo in sado_mazos:
-                SadoMazo.objects.get(model=model, **sado_mazo)
+                SadoMazo.objects.add(model=model, **sado_mazo)
             for stripteaze in stripteazes:
-                Striptease.objects.get(model=model, **stripteaze)
+                Striptease.objects.add(model=model, **stripteaze)
 
             return model
 
@@ -147,8 +154,15 @@ class ModelValidateSerializer(WritableNestedModelSerializer):
             instance.speak_english = validated_data.get('speak_english', instance.speak_english)
             instance.is_trans = validated_data.get('is_trans', instance.is_trans)
             instance.country = validated_data.get('country', instance.country)
+            instance.photo_1 = validated_data.get('photo_1', instance.photo_1)
+            instance.photo_2 = validated_data.get('photo_2', instance.photo_2)
+            instance.photo_3 = validated_data.get('photo_3', instance.photo_3)
+            instance.photo_4 = validated_data.get('photo_4', instance.photo_4)
+            instance.photo_5 = validated_data.get('photo_5', instance.photo_5)
+            instance.photo_6 = validated_data.get('photo_6', instance.photo_6)
+            instance.photo_7 = validated_data.get('photo_7', instance.photo_7)
 
-            galleries = validated_data.pop('gallery')
+            # galleries = validated_data.pop('gallery')
             package_price = validated_data.pop('package_price')
             basic_services = validated_data.pop('basic_service')
             additional_services = validated_data.pop('additional_service')
@@ -157,7 +171,7 @@ class ModelValidateSerializer(WritableNestedModelSerializer):
             sado_mazos = validated_data.pop('sado_mazo')
             stripteazes = validated_data.pop('stripteaze')
 
-            instance.gallery.set(galleries)
+            # instance.gallery.set(galleries)
             instance.package_price.set(package_price)
             instance.basic_service.set(basic_services)
             instance.additional_service.set(additional_services)
