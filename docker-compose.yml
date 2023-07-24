@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASES_ENGINE: django.db.backends.postgresql
+      DATABASES_NAME: vip_tokio_db
+      DATABASES_USER: vip_user
+      DATABASES_PASSWORD: vip_user777
+      DATABASES_HOST: db
+      DATABASES_PORT: 5432
+    depends_on:
+      - db
+    command: bash -c "sleep 10 && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - media_files:/path/to/model_photos
+
+  db:
+    image: postgres
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    restart: always
+    environment:
+      POSTGRES_DB: vip_tokio_db
+      POSTGRES_USER: vip_user
+      POSTGRES_PASSWORD: vip_user777
+    ports:
+      - "5433:5432"
+
+volumes:
+  pg_data:
+  media_files:
