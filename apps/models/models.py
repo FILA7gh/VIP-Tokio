@@ -1,5 +1,6 @@
 from apps.services.models import *
 from django.db import models
+from djongo import models as mongo
 from django.contrib.auth.models import User
 
 
@@ -73,22 +74,14 @@ class Model(models.Model):
         verbose_name_plural = 'Модели'
 
 
-# class ModelsGallery(models.Model):
-#     photo = models.ImageField(upload_to='model_photos')
-#     model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name='gallery')
-#
-#     def __str__(self):
-#         return f'{self.model}'
-#
-#     class Meta:
-#         verbose_name = 'Галерея'
-#         verbose_name_plural = 'Галереи'
+class Review(mongo.Model):
+    username = models.CharField(max_length=50, verbose_name='Никнейм')
+    text = models.CharField(max_length=255, verbose_name='Сообщение')
+    model = models.ForeignKey(Model, on_delete=models.CASCADE)
 
-#
-# class Review(models.Model):
-#     username = models.CharField(max_length=20)
-#     text = models.CharField(max_length=255)
-#     model = models.ForeignKey(Model, on_delete=models.CASCADE)
-#
-#     def __str__(self):
-#         return self.model
+    def __str__(self):
+        return f'{self.model}'
+
+    class Meta:
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'

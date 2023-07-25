@@ -2,33 +2,23 @@ from rest_framework import serializers
 import re
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
-from .models import Model
+from .models import Model, Review
 from apps.services.models import BasicService, AdditionalService, Massage, Striptease, SadoMazo, Extreme, PackagePrice
 from apps.services.serializers import PackagePriceSerializer, BasicServiceSerializer, AdditionalServiceSerializer, \
     MassageSerializer, StripteaseSerializer, SadoMazoSerializer, ExtremeSerializer
-
-
-# # Gallery
-# class GallerySerializer(serializers.ModelSerializer):
-#     photo = serializers.ImageField(required=True)
-#
-#     class Meta:
-#         model = ModelsGallery
-#         fields = ['model_id', 'photo']
 
 
 '''Model'''
 
 
 class ModelSerializer(serializers.ModelSerializer):
-    # gallery = GallerySerializer(many=True)
 
     class Meta:
         model = Model
         fields = ['id', 'photo_1', 'nickname', 'height', 'weight', 'breast', 'phone_number']
 
+
 class ModelDetailSerializer(serializers.ModelSerializer):
-    # gallery = GallerySerializer(many=True)
     package_price = PackagePriceSerializer(required=False)
     basic_service = BasicServiceSerializer(many=True, required=False)
     additional_service = AdditionalServiceSerializer(many=True, required=False)
@@ -72,7 +62,6 @@ class ModelValidateSerializer(WritableNestedModelSerializer):
     photo_6 = serializers.ImageField(required=False)
     photo_7 = serializers.ImageField(required=False)
 
-    # gallery = GallerySerializer(many=True, required=False)
     package_price = PackagePriceSerializer(required=False)
 
     basic_service = serializers.PrimaryKeyRelatedField(queryset=BasicService.objects.all(), many=True, required=True)
@@ -108,7 +97,6 @@ class ModelValidateSerializer(WritableNestedModelSerializer):
             return description
 
         def create(self, validated_data):
-            # galleries = validated_data.pop('gallery')
             package_price = validated_data.pop('package_price')
             basic_services = validated_data.pop('basic_service')
             additional_services = validated_data.pop('additional_service')
@@ -118,9 +106,6 @@ class ModelValidateSerializer(WritableNestedModelSerializer):
             stripteazes = validated_data.pop('stripteaze')
 
             model = Model.objects.create(package_price=package_price, **validated_data)
-
-            # for gallery in galleries:
-            #     ModelsGallery.objects.create(model=model, **gallery)
 
             for basic_service in basic_services:
                 BasicService.objects.add(model=model, **basic_service)
@@ -162,7 +147,6 @@ class ModelValidateSerializer(WritableNestedModelSerializer):
             instance.photo_6 = validated_data.get('photo_6', instance.photo_6)
             instance.photo_7 = validated_data.get('photo_7', instance.photo_7)
 
-            # galleries = validated_data.pop('gallery')
             package_price = validated_data.pop('package_price')
             basic_services = validated_data.pop('basic_service')
             additional_services = validated_data.pop('additional_service')
@@ -171,7 +155,6 @@ class ModelValidateSerializer(WritableNestedModelSerializer):
             sado_mazos = validated_data.pop('sado_mazo')
             stripteazes = validated_data.pop('stripteaze')
 
-            # instance.gallery.set(galleries)
             instance.package_price.set(package_price)
             instance.basic_service.set(basic_services)
             instance.additional_service.set(additional_services)
@@ -183,9 +166,11 @@ class ModelValidateSerializer(WritableNestedModelSerializer):
             instance.save()
             return instance
 
-# class ReviewSerializer(serializers.ModelSerializer):
-#
-#     class Meta:
-#         model = Review
-#         fields = ['id', 'username', 'text']
-#
+
+class ReviewSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(required=True, max_length=50)
+    text = serializers.CharField(required=True)
+
+    class Meta:
+        model = Review
+        fields = ['id', 'username', 'text']

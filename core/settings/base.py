@@ -44,7 +44,8 @@ OTHER_APPS = [
     'drf_yasg',
     'rest_framework.authtoken',
     'corsheaders',
-    'django'
+    'django',
+
 ]
 
 INSTALLED_APPS = [
@@ -107,6 +108,16 @@ DATABASES = {
         'PASSWORD': 'vip_user777',
         'HOST': 'db',
         'PORT': '5432',
+    },
+    'mongo': {
+        'ENGINE': 'djongo',
+        'NAME': 'vip_tokio_mdb',    # Имя базы данных MongoDB
+        'CLIENT': {
+            'host': 'vip_tokio',   # Хост, на котором работает MongoDB
+            'port': 27017,        # Порт MongoDB
+            'username': 'vip_user', # Имя пользователя MongoDB (если требуется аутентификация)
+            'password': 'vip_user777', # Пароль пользователя MongoDB (если требуется аутентификация)
+        },
     }
 }
 

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Model
+from .models import Model, Review
 
 
 # # тут происходит магия реализации галереи
@@ -14,3 +14,4 @@ from .models import Model
 # admin.site.register(Model, ModelAdmin)
 
 admin.site.register(Model)
+admin.site.register(Review)

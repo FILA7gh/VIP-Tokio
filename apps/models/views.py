@@ -1,18 +1,16 @@
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
-from rest_framework.parsers import MultiPartParser
-from rest_framework import status
+from rest_framework import status, permissions
 
 from .permissions import IsAdminOrAuthorOrReadOnly
-from .models import Model
-from .serializers import ModelSerializer, ModelDetailSerializer, ModelValidateSerializer
+from .models import Model, Review
+from .serializers import ModelSerializer, ModelDetailSerializer, ModelValidateSerializer, ReviewSerializer
 
 
 class ModelAPIView(ListCreateAPIView):
     queryset = Model.objects.all()
     pagination_class = PageNumberPagination
-    # parser_classes = [MultiPartParser]
     permission_classes = [IsAdminOrAuthorOrReadOnly]
 
     def get_serializer_class(self):
@@ -42,8 +40,13 @@ class ModelDetailAPIView(RetrieveUpdateDestroyAPIView):
         response_serializer = ModelDetailSerializer(instance, context={'request': request})
         return Response(data=response_serializer.data, status=status.HTTP_200_OK)
 
-#
-# class ReviewAPIView(ListCreateAPIView):
-#     queryset = Review.objects.all()
-#     serializer_class = ReviewSerializer
-#
+
+class ReviewAPIView(ListCreateAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    pagination_class = PageNumberPagination
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        model_id = self.kwargs['model_id']
+        return Review.objects.filter(model_id=model_id)
